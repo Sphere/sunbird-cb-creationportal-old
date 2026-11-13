@@ -561,30 +561,31 @@ class="matExpansion flex flex-middle margin-top-m margin-left-l margin-right-l p
         </mat-expansion-panel>
         <!-- AI Review: one item, styled like the section headers above, that opens Past reviews
              (every review this account started, with New review at the top). Course reviews
-             start from the course itself (its page, or its menu here). For creators, reviewers
-             and publishers, as the accordion's allowAuthor gate; the service checks the caller
-             itself on every call. -->
-        <mat-expansion-panel
-          #panelAi
-          class="no-shadow ai-review-panel"
-          style="cursor: pointer"
-          hideToggle
-          [expanded]="false"
-          (opened)="openAiReview(); panelAi.close()"
-        >
-          <mat-expansion-panel-header class="left-panel-header" [attr.aria-current]="isAiReviewRoute ? 'page' : null">
-            <mat-panel-title class="main-block">
-              <!-- The AI mark (AI Studio's sparkles): one large spark and two small ones. -->
-              <svg [ngClass]="{ iconActive: isAiReviewRoute }" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M10 5L11.8 11.2L18 13L11.8 14.8L10 21L8.2 14.8L2 13L8.2 11.2ZM18 1.5L19 4L21.5 5L19 6L18 8.5L17 6L14.5 5L17 4ZM19.5 15.5L20.2 17.3L22 18L20.2 18.7L19.5 20.5L18.8 18.7L17 18L18.8 17.3Z"
-                  fill="#808080"
-                />
-              </svg>
-              <span class="font-weight-500 head-content-block" [ngClass]="{ manageCourseActive: isAiReviewRoute }" i18n>AI Review</span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-        </mat-expansion-panel>
+             start from the course itself (its page, or its menu here). Only for users with the
+             AI_REVIEWER role; the service checks the caller itself on every call. -->
+        @if (canUseAiReview) {
+          <mat-expansion-panel
+            #panelAi
+            class="no-shadow ai-review-panel"
+            style="cursor: pointer"
+            hideToggle
+            [expanded]="false"
+            (opened)="openAiReview(); panelAi.close()"
+          >
+            <mat-expansion-panel-header class="left-panel-header" [attr.aria-current]="isAiReviewRoute ? 'page' : null">
+              <mat-panel-title class="main-block">
+                <!-- The AI mark (AI Studio's sparkles): one large spark and two small ones. -->
+                <svg [ngClass]="{ iconActive: isAiReviewRoute }" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M10 5L11.8 11.2L18 13L11.8 14.8L10 21L8.2 14.8L2 13L8.2 11.2ZM18 1.5L19 4L21.5 5L19 6L18 8.5L17 6L14.5 5L17 4ZM19.5 15.5L20.2 17.3L22 18L20.2 18.7L19.5 20.5L18.8 18.7L17 18L18.8 17.3Z"
+                    fill="#808080"
+                  />
+                </svg>
+                <span class="font-weight-500 head-content-block" [ngClass]="{ manageCourseActive: isAiReviewRoute }" i18n>AI Review</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+          </mat-expansion-panel>
+        }
       </mat-accordion>
       <!-- Its own accordion, outside the allowAuthor one above.
            allowAuthor is content_creator / content_reviewer / content_publisher,

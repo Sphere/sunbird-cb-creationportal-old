@@ -34,6 +34,8 @@ export class AirSelectComponent {
   /** Id of the visible label, so the combobox is announced with it. */
   readonly labelledBy = input<string | null>(null)
   readonly invalid = input(false)
+  /** A filter that is set (not its "all" choice): marked, so it is plain what is filtering. */
+  readonly filtering = input(false)
   readonly searchable = input(false)
   readonly searchPlaceholder = input('Type to search')
   readonly valueChange = output<string>()
@@ -68,7 +70,9 @@ export class AirSelectComponent {
     this.active.set(i >= 0 ? i : 0)
     this.open.set(true)
     if (this.searchable()) {
-      setTimeout(() => ((this.host.nativeElement as HTMLElement).querySelector?.('.air-select-search input') as HTMLInputElement | null)?.focus())
+      setTimeout(() =>
+        ((this.host.nativeElement as HTMLElement).querySelector?.('.air-select-search input') as HTMLInputElement | null)?.focus(),
+      )
     }
   }
 

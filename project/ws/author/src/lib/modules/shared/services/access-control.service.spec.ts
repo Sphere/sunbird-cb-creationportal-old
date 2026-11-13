@@ -2,7 +2,7 @@
 // heavy @ws-widget/utils barrel to keep this a fast, isolated unit test.
 jest.mock('@ws-widget/utils', () => ({ ConfigurationsService: class {} }))
 
-import { AccessControlService } from './access-control.service'
+import { AccessControlService, AI_REVIEW_ADMIN_ROLE, AI_REVIEWER_ROLE } from './access-control.service'
 
 describe('AccessControlService', () => {
   function make(userRoles: string[] = []): AccessControlService {
@@ -191,7 +191,9 @@ describe('AccessControlService', () => {
     })
 
     it('is false for anyone else, whatever their role', () => {
-      expect(make(['content_reviewer', 'content_publisher']).isCourseMember({ createdBy: 'x', reviewerIDs: ['a'], publisherIDs: [] })).toBe(false)
+      expect(make(['content_reviewer', 'content_publisher']).isCourseMember({ createdBy: 'x', reviewerIDs: ['a'], publisherIDs: [] })).toBe(
+        false,
+      )
       expect(make().isCourseMember(null)).toBe(false)
       expect(make().isCourseMember({ createdBy: 'x', reviewerIDs: 'u1' as unknown as string[] })).toBe(false)
     })
@@ -199,6 +201,37 @@ describe('AccessControlService', () => {
     it('is false without a signed-in user', () => {
       const svc = new AccessControlService({ userRoles: new Set(), userProfile: null } as any, '/en/')
       expect(svc.isCourseMember({ createdBy: '' })).toBe(false)
+    })
+  })
+
+  describe('AI review access', () => {
+    it('needs the AI_REVIEWER role (lower-cased by the portal)', () => {
+      expect(AI_REVIEWER_ROLE).toBe('ai_reviewer')
+      expect(make(['ai_reviewer']).hasAiReviewerRole()).toBe(true)
+      expect(make(['content_creator', 'content_reviewer', 'content_publisher']).hasAiReviewerRole()).toBe(false)
+    })
+
+    it("needs the role and being the course's creator, a reviewer or a publisher", () => {
+      const withRole = make(['ai_reviewer'])
+      expect(withRole.canAiReviewCourse({ createdBy: 'u1' })).toBe(true)
+      expect(withRole.canAiReviewCourse({ createdBy: 'x', reviewerIDs: ['u1'] })).toBe(true)
+      expect(withRole.canAiReviewCourse({ createdBy: 'x', publisherIDs: ['u1'] })).toBe(true)
+      // The role alone is not enough: the course must be theirs.
+      expect(withRole.canAiReviewCourse({ createdBy: 'x', reviewerIDs: ['a'] })).toBe(false)
+      // Nor is being on the course without the role.
+      expect(make(['content_creator']).canAiReviewCourse({ createdBy: 'u1' })).toBe(false)
+    })
+
+    it('lets an AI review admin review any course, and use AI review at all', () => {
+      const admin = make(['ai_review_admin'])
+      expect(AI_REVIEW_ADMIN_ROLE).toBe('ai_review_admin')
+      expect(admin.hasAiReviewAdminRole()).toBe(true)
+      expect(admin.canAiReviewCourse({ createdBy: 'someone-else', reviewerIDs: [], publisherIDs: [] })).toBe(true)
+      expect(admin.canAiReviewCourse(null)).toBe(false)
+      expect(admin.canUseAiReview()).toBe(true)
+      expect(make(['ai_reviewer']).canUseAiReview()).toBe(true)
+      expect(make(['ai_reviewer']).hasAiReviewAdminRole()).toBe(false)
+      expect(make(['content_creator']).canUseAiReview()).toBe(false)
     })
   })
 

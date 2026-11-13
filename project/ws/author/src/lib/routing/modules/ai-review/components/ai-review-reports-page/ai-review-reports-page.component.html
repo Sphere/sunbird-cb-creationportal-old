@@ -1,0 +1,555 @@
+<div class="air-page rp">
+  <div class="rp-aurora" aria-hidden="true"></div>
+
+  <!-- The title, and the two choices the whole report follows: when, and whose. -->
+  <header class="rp-head">
+    <div class="rp-head-text">
+      <div class="air-hero-top">
+        <button type="button" class="air-back" (click)="back()" aria-label="Back to My Workspace">
+          <ws-auth-air-icon name="arrowBack" />
+        </button>
+        <span class="air-eyebrow">
+          <span class="air-mark" aria-hidden="true"><ws-auth-air-icon name="sparkle" [size]="16" /></span>
+          <ng-container i18n>AI Review</ng-container>
+        </span>
+      </div>
+      <h1 class="rp-title" i18n>Usage &amp; spend</h1>
+      <p class="rp-sub" i18n>Every AI review across everyone, of courses and of files: who ran it, how it came out and what it cost.</p>
+      <ws-auth-air-page-tabs current="reports" />
+    </div>
+
+    <div class="rp-picks">
+      <div class="rp-pick" data-tone="blue">
+        <span class="rp-pick-k" id="air-rep-period"
+          ><ws-auth-air-icon name="timer" [size]="12" /> <ng-container i18n>Period</ng-container></span
+        >
+        <ws-auth-air-select
+          labelledBy="air-rep-period"
+          [options]="periodOptions"
+          [value]="period()"
+          [filtering]="period() !== 'month'"
+          (valueChange)="setPeriod($event)"
+        />
+      </div>
+      <div class="rp-pick" data-tone="green">
+        <span class="rp-pick-k" id="air-rep-person"
+          ><ws-auth-air-icon name="users" [size]="12" /> <ng-container i18n>Showing</ng-container></span
+        >
+        <ws-auth-air-select
+          labelledBy="air-rep-person"
+          [options]="personOptions()"
+          [value]="userId()"
+          [filtering]="!!userId()"
+          [searchable]="personOptions().length > 8"
+          searchPlaceholder="Search people"
+          (valueChange)="setPerson($event)"
+        />
+      </div>
+    </div>
+  </header>
+
+  @if (period() === 'custom') {
+    <div class="rp-dates">
+      <label class="rp-datefield">
+        <span i18n>From</span>
+        <input
+          class="module-input"
+          type="date"
+          [value]="customFrom()"
+          [max]="customTo() || null"
+          (change)="setCustom('from', $any($event.target).value)"
+        />
+      </label>
+      <label class="rp-datefield">
+        <span i18n>To</span>
+        <input
+          class="module-input"
+          type="date"
+          [value]="customTo()"
+          [min]="customFrom() || null"
+          (change)="setCustom('to', $any($event.target).value)"
+        />
+      </label>
+      @if (customInvalid()) {
+        <p class="air-error" role="alert" i18n>The "From" date is after the "To" date.</p>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <div class="rp-panel rp-alert" role="alert">
+      <ws-auth-air-icon name="error" />
+      <span>{{ error() }}</span>
+      <button type="button" class="rp-act" (click)="reload()" i18n>Try again</button>
+    </div>
+  }
+
+  <!-- Four figures, each with the one thing you would ask next about it. -->
+  @if (loadingSummary() && !summary()) {
+    <div class="rp-tiles" aria-busy="true">
+      <span class="air-visually-hidden" i18n>Loading the report…</span>
+      @for (n of [1, 2, 3, 4]; track n) {
+        <div class="rp-tile rp-tile--skel" aria-hidden="true">
+          <span class="rp-skel rp-skel-ico"></span>
+          <span class="rp-tile-body">
+            <span class="rp-skel rp-skel-sm"></span>
+            <span class="rp-skel rp-skel-lg"></span>
+          </span>
+        </div>
+      }
+    </div>
+  } @else if (summary(); as s) {
+    <div class="rp-tiles">
+      <div class="rp-tile" data-tone="blue">
+        <ws-auth-air-icon name="checklist" [size]="96" class="rp-tile-mark" aria-hidden="true" />
+        <span class="rp-tile-body">
+          <span class="rp-tile-head"
+            ><span class="rp-tile-ico"><ws-auth-air-icon name="checklist" [size]="16" /></span
+            ><span class="rp-tile-l" i18n>Reviews</span></span
+          >
+          <span class="rp-tile-n">{{ s.totals.reviews }}</span>
+          <span class="rp-tile-sub" i18n>started in the period</span>
+          <span class="rp-legend rp-legs-even">
+            <span class="rp-leg" title="Reviews of courses"
+              ><span i18n>Of courses</span><b>{{ s.totals.reviews - s.totals.files }}</b></span
+            >
+            <span class="rp-leg" title="Reviews of uploaded files"
+              ><span i18n>Of files</span><b>{{ s.totals.files }}</b></span
+            >
+          </span>
+        </span>
+      </div>
+
+      <div class="rp-tile" data-tone="green">
+        <ws-auth-air-icon name="users" [size]="96" class="rp-tile-mark" aria-hidden="true" />
+        <span class="rp-tile-body">
+          <span class="rp-tile-head"
+            ><span class="rp-tile-ico"><ws-auth-air-icon name="users" [size]="16" /></span><span class="rp-tile-l" i18n>People</span></span
+          >
+          <span class="rp-tile-n">{{ s.totals.people }}</span>
+          <span class="rp-tile-sub" i18n>ran at least one review</span>
+          @if (faces().shown.length) {
+            <span class="rp-faces">
+              @for (p of faces().shown; track p.userId) {
+                <span class="rp-face" [title]="personName(p.userId, p.name)">{{ initials(p.name || p.userId) }}</span>
+              }
+              @if (faces().more) {
+                <span class="rp-face rp-face--more">+{{ faces().more }}</span>
+              }
+            </span>
+          }
+        </span>
+      </div>
+
+      <div class="rp-tile" data-tone="orange">
+        <ws-auth-air-icon name="read" [size]="96" class="rp-tile-mark" aria-hidden="true" />
+        <span class="rp-tile-body">
+          <span class="rp-tile-head"
+            ><span class="rp-tile-ico"><ws-auth-air-icon name="read" [size]="16" /></span><span class="rp-tile-l" i18n>Courses</span></span
+          >
+          <span class="rp-tile-n">{{ s.totals.courses }}</span>
+          <span class="rp-tile-sub" i18n>different courses reviewed</span>
+          <span class="rp-legend rp-legs-even">
+            <span class="rp-leg" title="The average AI cost of one review in the period"
+              ><span i18n>Average</span><b>{{ usd(perReview()) }}</b></span
+            >
+            <span class="rp-leg" [title]="s.byCourse[0] ? 'Costliest course: ' + s.byCourse[0].name : ''"
+              ><span i18n>Costliest</span><b>{{ usd(s.byCourse[0]?.costUsd || 0) }}</b></span
+            >
+          </span>
+        </span>
+      </div>
+
+      <!-- Wider: the spend, and this month against the budget. -->
+      <div class="rp-tile rp-tile--wide rp-tile--accent" data-tone="violet">
+        <ws-auth-air-icon name="sparkle" [size]="110" class="rp-tile-mark" aria-hidden="true" />
+        <span class="rp-tile-body">
+          <span class="rp-tile-head"
+            ><span class="rp-tile-ico"><ws-auth-air-icon name="sparkle" [size]="16" /></span><span class="rp-tile-l" i18n>Spent</span></span
+          >
+          <span class="rp-tile-n rp-grad-num">{{ usd(s.totals.costUsd) }}</span>
+          <span class="rp-tile-sub">{{ periodText() }}</span>
+          <span class="rp-legend rp-legs-even">
+            @if (period() !== 'month') {
+              <span class="rp-leg"
+                ><span i18n>This month</span><b>{{ usd(s.month.spentUsd) }}</b></span
+              >
+            }
+            <span class="rp-leg" title="This calendar month's limit, across everyone"
+              ><span i18n>Budget</span><b>{{ usd(s.month.budgetUsd) }}</b></span
+            >
+            <span class="rp-leg" title="What is left of this month's budget"
+              ><span i18n>Left</span><b>{{ usd(budgetLeft()) }}</b></span
+            >
+          </span>
+        </span>
+        <span
+          class="rp-ring"
+          [class.rp-ring--high]="budgetPct() >= 80"
+          [style.--p]="budgetPct()"
+          role="img"
+          [attr.aria-label]="budgetPct() + '% of this month\'s budget used'"
+        >
+          <span>{{ budgetPct() }}%<small i18n>used</small></span>
+        </span>
+      </div>
+    </div>
+  }
+
+  <!-- What the figures mean, once, in plain words. -->
+  <p class="rp-about">
+    <ws-auth-air-icon name="info" [size]="16" />
+    <span i18n>
+      Figures cover the reviews started in the chosen period, by everyone or by the person picked. <b>Cost</b> is what the AI providers
+      charged for a review, recorded as it ran; a review that reused earlier results for unchanged resources costs $0.00. The
+      <b>budget</b> ring is this calendar month's spend across everyone, against the monthly limit, whatever period is chosen.
+    </span>
+  </p>
+
+  <!-- One list at a time, its count on the tab, so nothing is hidden by the switch. -->
+  <section class="rp-panel" aria-label="Reviews and spend">
+    <div class="rp-toolbar">
+      <div class="rp-tabs" role="tablist" aria-label="Show">
+        <button
+          type="button"
+          class="rp-tab"
+          role="tab"
+          data-tone="blue"
+          [class.on]="tab() === 'reviews'"
+          [attr.aria-selected]="tab() === 'reviews'"
+          (click)="tab.set('reviews')"
+        >
+          <span class="rp-tab-ico"><ws-auth-air-icon name="checklist" [size]="14" /></span><ng-container i18n>All reviews</ng-container>
+          <span class="rp-tab-n">{{ page()?.page?.total ?? 0 }}</span>
+        </button>
+        <button
+          type="button"
+          class="rp-tab"
+          role="tab"
+          data-tone="green"
+          [class.on]="tab() === 'people'"
+          [attr.aria-selected]="tab() === 'people'"
+          (click)="tab.set('people')"
+        >
+          <span class="rp-tab-ico"><ws-auth-air-icon name="users" [size]="14" /></span><ng-container i18n>By person</ng-container>
+          <span class="rp-tab-n">{{ summary()?.byPerson?.length ?? 0 }}</span>
+        </button>
+        <button
+          type="button"
+          class="rp-tab"
+          role="tab"
+          data-tone="orange"
+          [class.on]="tab() === 'courses'"
+          [attr.aria-selected]="tab() === 'courses'"
+          (click)="tab.set('courses')"
+        >
+          <span class="rp-tab-ico"><ws-auth-air-icon name="read" [size]="14" /></span><ng-container i18n>By course</ng-container>
+          <span class="rp-tab-n">{{ summary()?.byCourse?.length ?? 0 }}</span>
+        </button>
+      </div>
+
+      @if (tab() === 'reviews') {
+        <div class="rp-filters">
+          <div class="rp-filter">
+            <ws-auth-air-select
+              [options]="sourceOptions"
+              [value]="source()"
+              [filtering]="!!source()"
+              labelledBy="air-rep-kind"
+              (valueChange)="setSource($event)"
+            />
+            <span class="air-visually-hidden" id="air-rep-kind" i18n>Kind</span>
+          </div>
+          <div class="rp-filter">
+            <ws-auth-air-select
+              [options]="statusOptions"
+              [value]="status()"
+              [filtering]="!!status()"
+              labelledBy="air-rep-status"
+              (valueChange)="setStatus($event)"
+            />
+            <span class="air-visually-hidden" id="air-rep-status" i18n>Status</span>
+          </div>
+          <label class="rp-search">
+            <span class="air-visually-hidden" i18n>Search reviews</span>
+            <ws-auth-air-icon name="search" [size]="16" />
+            <input
+              class="module-input"
+              [class.rp-search--active]="!!query().trim()"
+              type="search"
+              placeholder="Course, file or person"
+              [value]="query()"
+              (input)="setQuery($any($event.target).value)"
+            />
+          </label>
+          <button type="button" class="rp-act" [disabled]="downloading() || !page()?.page?.total" (click)="download()">
+            <ws-auth-air-icon name="download" [size]="14" />
+            @if (downloading()) {
+              <ng-container i18n>Preparing…</ng-container>
+            } @else {
+              <ng-container i18n>CSV</ng-container>
+            }
+          </button>
+        </div>
+      }
+    </div>
+    <!-- What is filtering the report, each removable on its own, and all at once. -->
+    @if (activeFilters().length) {
+      <div class="rp-chips" role="group" aria-label="Filters in use">
+        <span class="rp-chips-k" i18n>Filtered by</span>
+        @for (f of activeFilters(); track f.key) {
+          <span class="rp-fchip">
+            <span class="rp-fchip-k">{{ f.label }}:</span> <b>{{ f.value }}</b>
+            <button
+              type="button"
+              class="rp-fchip-x"
+              (click)="removeFilter(f.key)"
+              [attr.aria-label]="'Remove the filter ' + f.label + ' ' + f.value"
+              [title]="'Remove ' + f.label"
+            >
+              <ws-auth-air-icon name="close" [size]="12" />
+            </button>
+          </span>
+        }
+        @if (activeFilters().length > 1) {
+          <button type="button" class="rp-clear" (click)="clearFilters()" i18n>Clear all</button>
+        }
+      </div>
+    }
+    @if (downloadError()) {
+      <p class="air-error" role="alert">{{ downloadError() }}</p>
+    }
+
+    @switch (tab()) {
+      @case ('reviews') {
+        @if (loadingPage() && !page()) {
+          <div class="rp-skel-rows" aria-busy="true">
+            @for (n of [1, 2, 3, 4, 5]; track n) {
+              <div class="rp-skel-row" aria-hidden="true">
+                <span class="rp-skel rp-skel-avatar"></span><span class="rp-skel rp-skel-line"></span
+                ><span class="rp-skel rp-skel-line rp-skel-sm"></span>
+              </div>
+            }
+          </div>
+        } @else if (page(); as p) {
+          <div class="rp-tw">
+            <table class="rp-table rp-table--reviews">
+              <colgroup>
+                <col class="c-title" />
+                <col class="c-type" />
+                <col class="c-who" />
+                <col class="c-status" />
+                <col class="c-outcome" />
+                <col class="c-cost" />
+                <col class="c-datetime" />
+                <col class="c-act" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col" i18n>Course or files</th>
+                  <th scope="col" i18n>Type</th>
+                  <th scope="col" i18n>Run by</th>
+                  <th scope="col" i18n>Status</th>
+                  <th scope="col" i18n>Outcome</th>
+                  <th scope="col" class="rp-num" i18n>Cost (USD)</th>
+                  <th scope="col" i18n>Started</th>
+                  <th scope="col" class="rp-act-col"><span class="air-visually-hidden" i18n>Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of p.reviews; track r.id) {
+                  <tr>
+                    <td>
+                      <span class="rp-name" [title]="r.name">{{ r.name }}</span>
+                      <span class="rp-meta" [title]="metaOf(r)">{{ metaOf(r) }}</span>
+                    </td>
+                    <td>
+                      <span class="rp-kind" [attr.data-tone]="r.source === 'upload' ? 'slate' : 'blue'">{{
+                        r.source === 'upload' ? 'Files' : 'Course'
+                      }}</span>
+                    </td>
+                    <td>
+                      <span class="rp-who" [title]="personName(r.requestedBy.id, r.requestedBy.name)">
+                        <span class="rp-avatar" aria-hidden="true">{{ initials(r.requestedBy.name || r.requestedBy.id) }}</span
+                        >{{ personName(r.requestedBy.id, r.requestedBy.name) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="rp-status" [attr.data-status]="r.status">{{ statusLabel(r.status) }}</span>
+                    </td>
+                    <td>
+                      <span class="rp-outcome" [title]="outcome(r)">{{ outcome(r) || '—' }}</span>
+                    </td>
+                    <td class="rp-num rp-cost">{{ usd(r.costUsd) }}</td>
+                    <td class="rp-date">
+                      {{ r.createdAt | date: 'd MMM y, h:mm a' }}
+                      @if (r.finishedAt && r.status !== 'running') {
+                        <small class="rp-made">took {{ durationText(r.createdAt, r.finishedAt) }}</small>
+                      }
+                    </td>
+                    <td class="rp-row-actions">
+                      <button type="button" class="rp-act" (click)="open(r)" [attr.aria-label]="'Open the report of ' + r.name">
+                        <ws-auth-air-icon name="openNew" [size]="13" /> <ng-container i18n>Open</ng-container>
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="8">
+                      <div class="rp-empty">
+                        <ws-auth-air-icon name="chart" [size]="28" />
+                        <p i18n>No reviews match. Pick a longer period or clear the filters.</p>
+                        @if (filtered()) {
+                          <button type="button" class="rp-act" (click)="clearFilters()" i18n>Clear filters</button>
+                        } @else if (period() !== 'all') {
+                          <button type="button" class="rp-act" (click)="setPeriod('all')" i18n>Show all time</button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          @if (pages() > 1) {
+            <nav class="rp-pager" aria-label="Pages">
+              <span class="rp-pager-range">{{ pageText() }} · {{ usd(p.costUsd) }} <ng-container i18n>in all</ng-container></span>
+              <div class="rp-pager-btns">
+                <button
+                  type="button"
+                  class="rp-pager-btn"
+                  [disabled]="!hasPrev() || loadingPage()"
+                  (click)="prev()"
+                  aria-label="Previous page"
+                  title="Previous page"
+                >
+                  <ws-auth-air-icon name="chevronLeft" [size]="16" />
+                </button>
+                <span class="rp-pager-of" i18n>Page {{ pageNo() }} of {{ pages() }}</span>
+                <button
+                  type="button"
+                  class="rp-pager-btn"
+                  [disabled]="!hasNext() || loadingPage()"
+                  (click)="next()"
+                  aria-label="Next page"
+                  title="Next page"
+                >
+                  <ws-auth-air-icon name="chevronRight" [size]="16" />
+                </button>
+              </div>
+            </nav>
+          } @else if (p.reviews.length) {
+            <p class="rp-foot">{{ pageText() }} · {{ usd(p.costUsd) }} <ng-container i18n>in all</ng-container></p>
+          }
+        }
+      }
+
+      @case ('people') {
+        <div class="rp-tw">
+          <table class="rp-table">
+            <colgroup>
+              <col />
+              <col class="c-n" />
+              <col class="c-cost" />
+              <col class="c-share" />
+              <col class="c-date" />
+              <col class="c-act" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col" i18n>Person</th>
+                <th scope="col" class="rp-num" i18n>Reviews</th>
+                <th scope="col" class="rp-num" i18n>Spent (USD)</th>
+                <th scope="col" i18n>Share of spend</th>
+                <th scope="col" i18n>Last review</th>
+                <th scope="col" class="rp-act-col"><span class="air-visually-hidden" i18n>Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of summary()?.byPerson || []; track p.userId) {
+                <tr>
+                  <td>
+                    <span class="rp-who rp-who--strong" [title]="p.userId">
+                      <span class="rp-avatar" aria-hidden="true">{{ initials(p.name || p.userId) }}</span
+                      >{{ personName(p.userId, p.name) }}
+                    </span>
+                  </td>
+                  <td class="rp-num">{{ p.reviews }}</td>
+                  <td class="rp-num rp-cost">{{ usd(p.costUsd) }}</td>
+                  <td class="rp-share-cell">
+                    <span class="rp-share" [attr.aria-label]="sharePct(p.costUsd) + '% of the spend'"
+                      ><span class="rp-share-bar"><span [style.width.%]="sharePct(p.costUsd)"></span></span
+                      ><b>{{ sharePct(p.costUsd) }}%</b></span
+                    >
+                  </td>
+                  <td class="rp-date">{{ p.lastAt | date: 'd MMM y' }}</td>
+                  <td class="rp-row-actions">
+                    <button
+                      type="button"
+                      class="rp-act"
+                      (click)="showPerson(p.userId)"
+                      [attr.aria-label]="'Show the reviews of ' + personName(p.userId, p.name)"
+                      i18n
+                    >
+                      Reviews
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="rp-muted-cell" i18n>Nobody ran a review in this period.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @case ('courses') {
+        <div class="rp-tw">
+          <table class="rp-table">
+            <colgroup>
+              <col />
+              <col class="c-n" />
+              <col class="c-cost" />
+              <col class="c-share" />
+              <col class="c-date" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col" i18n>Course</th>
+                <th scope="col" class="rp-num" i18n>Reviews</th>
+                <th scope="col" class="rp-num" i18n>Spent (USD)</th>
+                <th scope="col" i18n>Share of spend</th>
+                <th scope="col" i18n>Last review</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of summary()?.byCourse || []; track c.courseId) {
+                <tr>
+                  <td>
+                    <span class="rp-name" [title]="c.name || c.courseId">{{ c.name || c.courseId }}</span>
+                  </td>
+                  <td class="rp-num">{{ c.reviews }}</td>
+                  <td class="rp-num rp-cost">{{ usd(c.costUsd) }}</td>
+                  <td class="rp-share-cell">
+                    <span class="rp-share" [attr.aria-label]="sharePct(c.costUsd) + '% of the spend'"
+                      ><span class="rp-share-bar"><span [style.width.%]="sharePct(c.costUsd)"></span></span
+                      ><b>{{ sharePct(c.costUsd) }}%</b></span
+                    >
+                  </td>
+                  <td class="rp-date">{{ c.lastAt | date: 'd MMM y' }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="rp-muted-cell" i18n>No course was reviewed in this period.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  </section>
+</div>

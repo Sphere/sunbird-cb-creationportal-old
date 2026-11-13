@@ -37,6 +37,13 @@ describe('AirSelectComponent', () => {
     expect(trigger().textContent).toContain('Pick a level')
   })
 
+  it('marks a filter that is set, so it is plain what is filtering', () => {
+    expect(trigger().classList.contains('air-select-trigger--active')).toBe(false)
+    fixture.componentRef.setInput('filtering', true)
+    fixture.detectChanges()
+    expect(trigger().classList.contains('air-select-trigger--active')).toBe(true)
+  })
+
   it('opens on click with the selected option active, and closes on choosing', () => {
     trigger().click()
     fixture.detectChanges()

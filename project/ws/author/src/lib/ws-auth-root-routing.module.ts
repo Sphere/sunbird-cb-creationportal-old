@@ -7,6 +7,7 @@ import { RouterModule, Routes } from '@angular/router'
 import { GeneralGuard } from '../../../../../src/app/guards/general.guard'
 
 import { AuthRootComponent } from './components/root/root.component'
+import { AI_REVIEW_ADMIN_ROLE, AI_REVIEWER_ROLE } from './modules/shared/services/access-control.service'
 
 import { ViewerComponent } from './routing/components/viewer/viewer.component'
 
@@ -40,7 +41,10 @@ const routes: Routes = [
     // the page away from people who could never pass that check.
     path: 'ai-review',
     loadChildren: () => import('./routing/modules/ai-review/ai-review.module').then(u => u.AiReviewModule),
-    data: { requiredRoles: ['content_creator', 'content_reviewer', 'content_publisher'] },
+    // AI review needs AI_REVIEWER or AI_REVIEW_ADMIN (lower-cased by the portal). A course review
+    // also needs an AI reviewer to be the course's creator, reviewer or publisher; an admin may
+    // review any course (checked on the page and by the service).
+    data: { requiredRoles: [AI_REVIEWER_ROLE, AI_REVIEW_ADMIN_ROLE] },
     canActivate: [GeneralGuard],
   },
   {

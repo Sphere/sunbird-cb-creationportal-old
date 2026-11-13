@@ -44,6 +44,17 @@
   &--invalid {
     border-color: $air-amber;
   }
+
+  // A filter that is set: the accent edge and a faint tint, so it reads as "filtering".
+  &--active:not(.air-select-trigger--open) {
+    border-color: rgba(47, 95, 232, 0.55);
+    background: #f2f6ff;
+
+    .air-select-value {
+      font-weight: 600;
+      color: $air-primary-deep;
+    }
+  }
 }
 
 .air-select-value {

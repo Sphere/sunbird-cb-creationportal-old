@@ -18,6 +18,9 @@ import {
   IAiReviewSignedUpload,
   IAiReviewUploadContext,
   IAiReviewUploadHistoryEntry,
+  IAiReviewAdminFilter,
+  IAiReviewAdminPage,
+  IAiReviewAdminSummary,
 } from '../models/ai-review.model'
 
 /**
@@ -54,6 +57,17 @@ export function withPackageUrls(review: IAiReview): IAiReview {
 }
 
 const enc = encodeURIComponent
+
+/** The admin report's filters as query parameters, leaving out the empty ones. */
+export function adminParams(filter: IAiReviewAdminFilter): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const [key, value] of Object.entries(filter)) {
+    if (typeof value === 'string' && value.trim() !== '') {
+      out[key] = value.trim()
+    }
+  }
+  return out
+}
 
 @Injectable()
 export class AiReviewService {
@@ -109,6 +123,18 @@ export class AiReviewService {
   /** Every review this account started, of courses and of its files, newest first. */
   pastReviews(): Observable<IAiReviewPastReview[]> {
     return this.http.get<{ reviews: IAiReviewPastReview[] }>(`${AI_REVIEW_API_BASE}/reviews/mine`).pipe(map(res => res.reviews || []))
+  }
+
+  /** AI review admins: one page of every review across everyone, newest first. */
+  adminReviews(filter: IAiReviewAdminFilter, limit = 50, offset = 0): Observable<IAiReviewAdminPage> {
+    return this.http.get<IAiReviewAdminPage>(`${AI_REVIEW_API_BASE}/admin/reviews`, {
+      params: { ...adminParams(filter), limit: String(limit), offset: String(offset) },
+    })
+  }
+
+  /** AI review admins: the spend in all, by person, by course and by day, and this month's budget. */
+  adminSummary(filter: IAiReviewAdminFilter): Observable<IAiReviewAdminSummary> {
+    return this.http.get<IAiReviewAdminSummary>(`${AI_REVIEW_API_BASE}/admin/summary`, { params: adminParams(filter) })
   }
 
   cancel(reviewId: string): Observable<{ cancelled: boolean }> {

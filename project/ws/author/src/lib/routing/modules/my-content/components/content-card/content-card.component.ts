@@ -232,9 +232,9 @@ export class ContentCardComponent implements OnInit, OnChanges {
         returnValue = this.accessService.hasAccess({ ...this.data, status: 'Draft' })
         break
       case 'aiReview':
-        // Courses only, for their creator and the reviewers and publishers added to them.
-        // The service makes the same check against the course.
-        returnValue = this.data.contentType === 'Course' && this.accessService.isCourseMember(this.data)
+        // Courses only, for users with the AI_REVIEWER role who are the course's creator or one of
+        // its reviewers or publishers. The service checks the course membership too.
+        returnValue = this.data.contentType === 'Course' && this.accessService.canAiReviewCourse(this.data)
         break
     }
     return returnValue

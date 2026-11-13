@@ -1,0 +1,20 @@
+@if (isAdmin) {
+  <nav class="air-covtabs air-pagetabs" aria-label="AI review">
+    <a
+      class="air-covtab"
+      [class.air-covtab--on]="current() === 'past'"
+      [routerLink]="homeLink"
+      [attr.aria-current]="current() === 'past' ? 'page' : null"
+    >
+      <ws-auth-air-icon name="history" [size]="16" /> <ng-container i18n>Past reviews</ng-container>
+    </a>
+    <a
+      class="air-covtab"
+      [class.air-covtab--on]="current() === 'reports'"
+      [routerLink]="reportsLink"
+      [attr.aria-current]="current() === 'reports' ? 'page' : null"
+    >
+      <ws-auth-air-icon name="chart" [size]="16" /> <ng-container i18n>Reports</ng-container>
+    </a>
+  </nav>
+}

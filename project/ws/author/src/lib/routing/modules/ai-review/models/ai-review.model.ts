@@ -569,3 +569,51 @@ export interface IAiReviewUsageLine {
   audioSec: number
   costUsd: number
 }
+
+// ---- AI review admin's report (AI_REVIEW_ADMIN) ------------------------------------------------
+
+/** The admin report's filters; every one is optional. Dates are YYYY-MM-DD, both inclusive. */
+export interface IAiReviewAdminFilter {
+  from?: string
+  to?: string
+  userId?: string
+  source?: AiReviewSource
+  status?: AiReviewStatus
+  q?: string
+}
+
+/** One review in the admin's list: who ran it, how it came out, and what it cost. */
+export interface IAiReviewAdminRow {
+  id: string
+  source: AiReviewSource
+  courseId: string | null
+  /** The course's name, or a file review's title. */
+  name: string
+  requestedBy: { id: string; name: string }
+  status: AiReviewStatus
+  progress: { done: number; total: number }
+  costUsd: number
+  estimateUsd: number
+  scorePct: number | null
+  /** The course verdict (from the checklist and domain review together), when there is one. */
+  verdict: { band?: string; message?: string } | null
+  competency: { label?: string; code?: string } | null
+  createdAt: string
+  finishedAt: string | null
+}
+
+export interface IAiReviewAdminPage {
+  reviews: IAiReviewAdminRow[]
+  page: { total: number; limit: number; offset: number }
+  /** What every matching review cost, not only this page. */
+  costUsd: number
+}
+
+export interface IAiReviewAdminSummary {
+  totals: { reviews: number; costUsd: number; people: number; courses: number; files: number }
+  byPerson: { userId: string; name: string; reviews: number; costUsd: number; lastAt: string }[]
+  byCourse: { courseId: string; name: string; reviews: number; costUsd: number; lastAt: string }[]
+  byDay: { day: string; reviews: number; costUsd: number }[]
+  /** This calendar month's spend (all reviews) against the monthly budget. */
+  month: { spentUsd: number; budgetUsd: number }
+}

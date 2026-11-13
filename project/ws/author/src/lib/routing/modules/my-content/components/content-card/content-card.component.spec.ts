@@ -4,6 +4,8 @@ import { ContentCardComponent } from './content-card.component'
 describe('ContentCardComponent', () => {
   let component: ContentCardComponent
   let accessService: any
+  /** Whether the signed-in user holds the AI_REVIEWER role (most tests: yes). */
+  let aiReviewer = true
   let authInitService: any
   let router: any
   let editorService: any
@@ -41,6 +43,7 @@ describe('ContentCardComponent', () => {
   }
 
   beforeEach(() => {
+    aiReviewer = true
     afterClosed = new Subject<any>()
     accessService = {
       userId: 'u1',
@@ -51,6 +54,11 @@ describe('ContentCardComponent', () => {
       isCourseMember: jest.fn(
         (m: { createdBy?: string; reviewerIDs?: string[]; publisherIDs?: string[] } | null) =>
           !!m && (m.createdBy === 'u1' || (m.reviewerIDs || []).includes('u1') || (m.publisherIDs || []).includes('u1')),
+      ),
+      // Mirrors AccessControlService.canAiReviewCourse: the AI_REVIEWER role and course membership.
+      canAiReviewCourse: jest.fn(
+        (m: { createdBy?: string; reviewerIDs?: string[]; publisherIDs?: string[] } | null) =>
+          aiReviewer && !!m && (m.createdBy === 'u1' || (m.reviewerIDs || []).includes('u1') || (m.publisherIDs || []).includes('u1')),
       ),
     }
     authInitService = { editCourse: jest.fn() }
@@ -393,6 +401,11 @@ describe('ContentCardComponent', () => {
       expect(withData().showMenuItem('lang')).toBe(true)
       accessService.hasAccess.mockReturnValue(false)
       expect(withData().showMenuItem('lang')).toBe(false)
+    })
+
+    it('does not offer AI review without the AI_REVIEWER role, even on their own course', () => {
+      aiReviewer = false
+      expect(withData({ contentType: 'Course', createdBy: 'u1' }).showMenuItem('aiReview')).toBe(false)
     })
 
     it('offers AI review on a course to its creator', () => {
