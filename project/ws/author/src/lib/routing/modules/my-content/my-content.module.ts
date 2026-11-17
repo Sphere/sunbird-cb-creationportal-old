@@ -19,9 +19,10 @@ import { ContentCardV2Component } from './components/content-card-v2/content-car
 import { PipeDurationTransformModule } from '@ws-widget/utils'
 
 import { AIStudioModule } from '../ai-studio/ai-studio.module'
+import { AiReviewedMarkComponent } from './components/ai-reviewed-mark/ai-reviewed-mark.component'
 
 @NgModule({
-  declarations: [MyContentComponent, ContentCardComponent, ContentCardV2Component],
+  declarations: [MyContentComponent, ContentCardComponent, ContentCardV2Component, AiReviewedMarkComponent],
   imports: [CommonModule, SharedModule, MyContentRoutingModule, PipeContentRouteModule, PipeDurationTransformModule, AIStudioModule],
   providers: [MyContentService],
 })

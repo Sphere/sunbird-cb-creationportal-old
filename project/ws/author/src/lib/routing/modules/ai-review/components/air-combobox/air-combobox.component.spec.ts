@@ -17,7 +17,8 @@ describe('AirComboboxComponent', () => {
     input().dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }))
     fixture.detectChanges()
   }
-  const options = () => Array.from(fixture.nativeElement.querySelectorAll('.air-combo-option')).map(o => (o as HTMLElement).textContent?.trim())
+  const options = () =>
+    Array.from(fixture.nativeElement.querySelectorAll('.air-combo-option')).map(o => (o as HTMLElement).textContent?.trim())
 
   beforeEach(() => {
     TestBed.configureTestingModule({ declarations: [AirComboboxComponent, AirIconComponent] })
@@ -54,6 +55,27 @@ describe('AirComboboxComponent', () => {
     type('st')
     ;(fixture.nativeElement.querySelector('.air-combo-option') as HTMLElement).click()
     expect(values.at(-1)).toBe('Staff Nurse')
+  })
+
+  it('says when a suggestion is picked, and when typed text is entered as it is', () => {
+    const picked: string[] = []
+    const committed: string[] = []
+    component.picked.subscribe(v => picked.push(v))
+    component.committed.subscribe(v => committed.push(v))
+    key('ArrowDown')
+    key('Enter')
+    expect(picked).toEqual(['ANM'])
+    expect(committed).toEqual([])
+    // Typed text with nothing highlighted: Enter uses it as it is.
+    fixture.componentRef.setInput('value', ' Block health officer ')
+    fixture.detectChanges()
+    key('Enter')
+    expect(committed).toEqual(['Block health officer'])
+    // Nothing typed: Enter does nothing.
+    fixture.componentRef.setInput('value', '')
+    fixture.detectChanges()
+    key('Enter')
+    expect(committed).toHaveLength(1)
   })
 
   it('closes on Escape, and has no list when there is nothing to suggest', () => {

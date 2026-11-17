@@ -127,7 +127,7 @@ describe('AiReviewNewPageComponent', () => {
   let query: Record<string, string>
   let n: number
 
-  const create = (pickAudience = true): AiReviewNewPageComponent => {
+  const create = (): AiReviewNewPageComponent => {
     TestBed.configureTestingModule({
       providers: [
         { provide: AiReviewService, useValue: api },
@@ -137,10 +137,6 @@ describe('AiReviewNewPageComponent', () => {
     })
     const c = TestBed.runInInjectionContext(() => new AiReviewNewPageComponent())
     c.ngOnInit()
-    // The audience starts empty and Start needs one: picked here as a user would.
-    if (pickAudience) {
-      c.audience.set('ANM / ASHA frontline health workers')
-    }
     return c
   }
 
@@ -172,9 +168,8 @@ describe('AiReviewNewPageComponent', () => {
 
   describe('opening the page', () => {
     it('loads the setup and the past reviews, taking the defaults', () => {
-      const c = create(false)
+      const c = create()
       expect(c.enabled()).toBe(true)
-      expect(c.audience()).toBe('')
       expect(c.domain()).toBe(true)
       expect(c.maxFiles()).toBe(4)
       expect(api.uploadHistory).toHaveBeenCalled()
@@ -644,6 +639,15 @@ describe('AiReviewNewPageComponent', () => {
       expect(c.level()).toBeNull()
     })
 
+    it('judges one competency at one level, with no audience to pick', () => {
+      const c = create()
+      c.selectCompetency('C2')
+      c.setLevel('1')
+      expect(c.levelValue()).toBe('1')
+      expect(c.buildOptions()).toMatchObject({ competencyId: 'C2', level: 1, levelMode: 'single', audience: '', positionCode: null })
+      expect(c.buildOptions().selectedLevels).toBeUndefined()
+    })
+
     it('estimates the cost of the ready files with the reviews switched on', () => {
       const c = create()
       c.addFiles([file('bp.mp4')])
@@ -658,7 +662,6 @@ describe('AiReviewNewPageComponent', () => {
       const c = create()
       c.addFiles([file('bp.mp4'), file('notes.pdf'), file('deck.pptx')])
       c.selectCompetency('C1')
-      c.audience.set('ANM')
       c.notes.set('  rural PHC  ')
       expect(c.defaultTitle()).toBe('bp and 1 more')
       c.start()
@@ -672,8 +675,8 @@ describe('AiReviewNewPageComponent', () => {
         competencyId: 'C1',
         level: 2,
         levelMode: 'single',
-        positionCode: 'ANM',
-        audience: 'ANM',
+        positionCode: null,
+        audience: '',
         language: 'auto',
         reportLanguage: 'en',
         context: 'rural PHC',
@@ -819,14 +822,13 @@ describe('AiReviewNewPageComponent', () => {
       const c = create()
       c.domainStyle.set('frac')
       c.selectCompetency('C1')
-      c.audience.set('ANM')
       TestBed.tick()
       // Busy at once, before the settings settle, so the panel never sits empty.
       expect(c.roleChecking()).toBe(true)
       expect(api.uploadFracRole).not.toHaveBeenCalled()
       jest.advanceTimersByTime(REUSE_CHECK_DEBOUNCE_MS)
       expect(api.uploadFracRole).toHaveBeenCalledWith(
-        expect.objectContaining({ domainStyle: 'frac', competencyId: 'C1', level: 2, positionCode: 'ANM' }),
+        expect.objectContaining({ domainStyle: 'frac', competencyId: 'C1', level: 2, positionCode: null }),
       )
       expect(c.roleChecking()).toBe(false)
     })
@@ -834,7 +836,6 @@ describe('AiReviewNewPageComponent', () => {
     it('says what to pick before the role check can run', () => {
       const c = create()
       c.domainStyle.set('frac')
-      c.audience.set('ANM')
       expect(c.roleWaiting()).toMatch(/Pick a competency/)
       c.selectCompetency('C1')
       expect(c.roleWaiting()).toBe('')

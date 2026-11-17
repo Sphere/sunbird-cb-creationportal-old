@@ -78,20 +78,23 @@ describe('role check', () => {
       fixture = TestBed.createComponent(AirRoleCheckComponent)
     })
 
-    it('shows the Plain checks for the audience typed', () => {
-      set({ domainStyle: 'plain', audience: 'ANM' })
+    it('shows the Plain checks, judged for the health workers the level is meant for', () => {
+      set({ domainStyle: 'plain' })
       // With FRAC hidden there is no choice of style, so the heading names none, and nothing says to pick FRAC.
       expect(text()).toContain('What the expert checks')
       expect(text()).not.toContain('(Plain)')
       expect(text()).not.toContain('choose FRAC')
-      expect(text()).toContain('Right for ANM')
+      expect(text()).toContain('Right for the learners')
+      expect(text()).toContain('the health workers this competency level is')
     })
 
-    it('asks for a position, then shows the roles and activities, saying what each file is judged on', () => {
+    it('says what FRAC judges without a position, then shows the roles and activities, saying what each file is judged on', () => {
       set({ domainStyle: 'frac' })
-      expect(text()).toContain('Pick a position in Audience above')
-      // Without a position FRAC still judges level fit and coverage, and role fit against the audience.
-      expect(text()).toContain('FRAC still judges the level fit and coverage, and judges role fit against your audience.')
+      // Without a position FRAC judges level fit and coverage, and role fit against the competency's own cadre.
+      expect(text()).toContain(
+        'FRAC judges the level fit and coverage, and judges role fit against the health workers this competency level is meant for.',
+      )
+      expect(text()).not.toContain('Audience')
       expect(text()).not.toContain('competency level only')
       set({
         positionName: 'ANM_UP',
@@ -108,7 +111,7 @@ describe('role check', () => {
       set({ domainStyle: 'frac', positionName: 'ANM', check: { role: null, roleNote: 'The FRAC role data could not be read just now.' } })
       expect(text()).toContain('The FRAC role data could not be read just now.')
       expect(text()).toContain(
-        'You can still start: FRAC then judges the level fit and coverage, and judges role fit against your audience instead of the activities.',
+        'You can still start: FRAC then judges the level fit and coverage, and judges role fit against the health workers this competency level is meant for instead of the activities.',
       )
     })
 

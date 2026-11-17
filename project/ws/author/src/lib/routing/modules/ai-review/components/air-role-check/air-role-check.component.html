@@ -3,8 +3,7 @@
     <span class="air-role-title"><ws-auth-air-icon name="expert" [size]="16" /> <ng-container i18n>Role check (FRAC)</ng-container></span>
     @if (!positionName()) {
       <p class="air-hint air-hint--warn" i18n>
-        Pick a position in Audience above to check the role's activities. Without one, FRAC still judges the level fit and coverage, and
-        judges role fit against your audience.
+        FRAC judges the level fit and coverage, and judges role fit against the health workers this competency level is meant for.
       </p>
     } @else if (checking()) {
       <ws-auth-air-busy [label]="'Reading the roles and activities of ' + positionName()" detail="From FRAC" [typicalSec]="10" />
@@ -87,8 +86,8 @@
             <p class="air-role-notice-text">{{ check()!.roleNote }}</p>
           }
           <p class="air-role-notice-foot" i18n>
-            You can still start: FRAC then judges the level fit and coverage, and judges role fit against your audience instead of the
-            activities.
+            You can still start: FRAC then judges the level fit and coverage, and judges role fit against the health workers this competency
+            level is meant for instead of the activities.
           </p>
         </div>
       </div>
@@ -112,8 +111,8 @@
       <li i18n><strong>Teaches the level</strong>: it covers what the level description names, with nothing essential skipped or wrong.</li>
       <li i18n><strong>Accurate practice</strong>: protocols, thresholds, steps and tools match standard Indian public-health practice.</li>
       <li i18n>
-        <strong>Right for {{ audience().trim() || 'the learners' }}</strong
-        >: depth, language and safety points suit them, shown in their real work setting.
+        <strong>Right for the learners</strong>: depth, language and safety points suit the health workers this competency level is meant
+        for, shown in their real work setting.
       </li>
     </ul>
     <div class="air-role-next">

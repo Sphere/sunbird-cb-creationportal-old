@@ -138,7 +138,7 @@ export function inShortOf(review: Pick<IAiReview, 'result' | 'items'>, words: { 
   const unsure = borderlineCountOf(review)
   if (unsure) {
     lines.push(
-      `${n(unsure, 'finding is', 'findings are')} marked Borderline: the reviewer was not sure, or could not prove ${unsure === 1 ? 'it' : 'them'} from the material. Check ${unsure === 1 ? 'it' : 'them'} by hand before acting.`,
+      `${n(unsure, 'finding is', 'findings are')} marked Please check: the review was not sure, or could not confirm ${unsure === 1 ? 'it' : 'them'} from the material. Check ${unsure === 1 ? 'it' : 'them'} by hand before acting.`,
     )
   }
   return lines

@@ -26,7 +26,35 @@
             >
           </span>
           <span class="air-score-body">
-            <span class="air-score-label" i18n>CBP / ADDIE checklist</span>
+            <span class="air-score-label air-info">
+              <ng-container i18n>CBP / ADDIE checklist</ng-container>
+              <button
+                type="button"
+                class="air-info-btn"
+                aria-label="What the checklist score counts"
+                [attr.aria-expanded]="info() === 'addie'"
+                aria-controls="air-info-addie"
+                (click)="toggleInfo('addie')"
+              >
+                <ws-auth-air-icon name="info" [size]="16" />
+              </button>
+              @if (info() === 'addie') {
+                <span class="air-info-panel" id="air-info-addie">
+                  <span class="air-info-title" i18n>What this score counts</span>
+                  <span class="air-info-text" i18n
+                    >The CBP / ADDIE checklist has {{ checklistTotal() || 47 }} points: content quality, instructional design and technical
+                    design.</span
+                  >
+                  <span class="air-info-text" i18n
+                    >Each {{ words().one }} is judged only on the points that fit its kind (a quiz has no visuals or narration), and points
+                    answered N/A are left out. The rest are added up over every {{ words().one }} reviewed, so the total here is
+                    {{ s.addie.applicable }}, not {{ checklistTotal() || 47 }}.</span
+                  >
+                  <span class="air-info-text" i18n>Green is 85% and above, amber 70–84%, red below 70%.</span>
+                  <button type="button" class="air-info-close" (click)="closeInfo()" i18n>Close</button>
+                </span>
+              }
+            </span>
             <span class="air-score-main">{{ s.addie.yes }} of {{ s.addie.applicable }} <ng-container i18n>checks met</ng-container></span>
             @if (checklistTotal()) {
               <span class="air-small air-muted"
@@ -54,7 +82,46 @@
             >
           </span>
           <span class="air-score-body">
-            <span class="air-score-label" i18n>Domain review</span>
+            <span class="air-score-label air-info">
+              <ng-container i18n>Domain review</ng-container>
+              <button
+                type="button"
+                class="air-info-btn"
+                aria-label="What the domain review counts"
+                [attr.aria-expanded]="info() === 'domain'"
+                aria-controls="air-info-domain"
+                (click)="toggleInfo('domain')"
+              >
+                <ws-auth-air-icon name="info" [size]="16" />
+              </button>
+              @if (info() === 'domain') {
+                <span class="air-info-panel" id="air-info-domain">
+                  <span class="air-info-title" i18n>What this score counts</span>
+                  <span class="air-info-text" i18n
+                    >A subject expert judges every {{ words().one }} against the chosen competency level on the same
+                    {{ domainChecks().length }} checks, each met or not (never N/A):</span
+                  >
+                  <span class="air-info-list">
+                    @for (c of domainChecks(); track c.id) {
+                      <span class="air-info-item"
+                        ><b>{{ c.id }}</b> {{ c.text }}</span
+                      >
+                    }
+                  </span>
+                  <span class="air-info-text" i18n
+                    >So the total is {{ domainChecks().length }} for each {{ words().one }} reviewed: {{ s.domain.applicable }} here. A
+                    {{ words().one }} whose review could not run adds nothing, and a finding withdrawn because the material did not support
+                    it counts neither way.</span
+                  >
+                  <span class="air-info-text air-info-source" i18n
+                    >From the client's Video Reviewer spec ({{
+                      review().options?.domainStyle === 'frac' ? 'FRAC style, with D7 added so accuracy is still checked' : 'plain style'
+                    }}).</span
+                  >
+                  <button type="button" class="air-info-close" (click)="closeInfo()" i18n>Close</button>
+                </span>
+              }
+            </span>
             @if (judgedAgainst(); as against) {
               <span class="air-score-main">{{ against }}</span>
             }
@@ -557,9 +624,9 @@
                       @if (x.borderline) {
                         <span
                           class="air-chip air-chip--sm air-chip--amber"
-                          [attr.title]="x.check || 'The reviewer was not sure about this one. Check it yourself.'"
+                          [attr.title]="x.check || 'The review could not confirm this from the material. Check it before acting.'"
                           i18n
-                          >Borderline</span
+                          >Please check</span
                         >
                       }
                       @if (placeLabel(x.place); as at) {
@@ -646,13 +713,17 @@
                   <span class="air-indicator-body">
                     <span class="air-indicator-text">
                       {{ it.text }}
-                      <span class="air-chip air-chip--sm air-chip--{{ it.verdict }}">{{ verdictLabel(it.verdict) }}</span>
-                      @if (it.borderline) {
+                      @if (it.withdrawn) {
+                        <span class="air-chip air-chip--sm air-chip--na" i18n>Not judged</span>
+                      } @else {
+                        <span class="air-chip air-chip--sm air-chip--{{ it.verdict }}">{{ verdictLabel(it.verdict) }}</span>
+                      }
+                      @if (it.borderline && !it.withdrawn) {
                         <span
                           class="air-chip air-chip--sm air-chip--amber"
-                          [attr.title]="it.check || 'The reviewer was not sure about this one. Check it yourself.'"
+                          [attr.title]="it.check || 'The review could not confirm this from the material. Check it before acting.'"
                           i18n
-                          >Borderline</span
+                          >Please check</span
                         >
                       }
                       @if (it.page || it.atSec !== undefined) {
@@ -662,10 +733,12 @@
                         >
                       }
                     </span>
-                    @if (it.note) {
+                    @if (it.withdrawn) {
+                      <span class="air-note">{{ it.withdrawn }}</span>
+                    } @else if (it.note) {
                       <span class="air-note">{{ it.note }}</span>
                     }
-                    @if (it.check) {
+                    @if (it.check && !it.withdrawn) {
                       <span class="air-check-why"
                         ><ws-auth-air-icon name="warning" [size]="14" /> <b i18n>Check by hand:</b> {{ it.check }}</span
                       >

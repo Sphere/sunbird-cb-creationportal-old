@@ -6,6 +6,7 @@ import { IAiReview, IAiReviewHistoryEntry, IAiReviewPreview } from '../../models
 import { AiReviewService } from '../../services/ai-review.service'
 import {
   AiReviewCoursePageComponent,
+  ONE_LEVEL_ONLY,
   JOINED_COURSE_REVIEW,
   STARTED_AFTER_ALL,
   MEASURE_TIMEOUT_MS,
@@ -87,8 +88,9 @@ describe('AiReviewCoursePageComponent', () => {
   let query: Record<string, string>
   let hidden: boolean
 
-  /** The page as a user finds it, with an audience picked (it starts empty, and Start needs one). */
-  const create = (pickAudience = true): AiReviewCoursePageComponent => {
+  /** The page as a user finds it. */
+  const create = (): AiReviewCoursePageComponent => {
+    TestBed.resetTestingModule()
     TestBed.configureTestingModule({
       providers: [
         { provide: AiReviewService, useValue: api },
@@ -99,11 +101,7 @@ describe('AiReviewCoursePageComponent', () => {
         },
       ],
     })
-    const c = TestBed.runInInjectionContext(() => new AiReviewCoursePageComponent())
-    if (pickAudience) {
-      c.audience.set('ANM / ASHA frontline health workers')
-    }
-    return c
+    return TestBed.runInInjectionContext(() => new AiReviewCoursePageComponent())
   }
 
   beforeEach(() => {
@@ -184,7 +182,7 @@ describe('AiReviewCoursePageComponent', () => {
 
   describe('setup', () => {
     it('loads the course and fills the defaults from it', () => {
-      const c = create(false)
+      const c = create()
       c.ngOnInit()
 
       expect(api.preview).toHaveBeenCalledWith('do_1')
@@ -192,12 +190,10 @@ describe('AiReviewCoursePageComponent', () => {
       expect(c.domain()).toBe(true)
       expect(c.competencyId()).toBe('C1')
       expect(c.level()).toBe(2)
-      // Left for the reviewer to pick, never guessed.
-      expect(c.audience()).toBe('')
       expect(c.reviewable().map(r => r.contentId)).toEqual(['do_v'])
       expect(c.notReviewable().map(r => r.contentId)).toEqual(['do_p'])
-      // Nothing is missing but the audience, which the reviewer picks.
-      expect(c.validationMessage()).toMatch(/^Pick the audience/)
+      // No audience to pick: ready to start.
+      expect(c.validationMessage()).toBe('')
     })
 
     it('turns Domain review off on a course with no competency', () => {
@@ -257,12 +253,12 @@ describe('AiReviewCoursePageComponent', () => {
       ])
     })
 
-    it('judges each part of a self-assessment course at its own level by default', () => {
+    it('judges a self-assessment course at one level too: no per-part choice', () => {
       api.preview.mockReturnValue(
         of(
           preview({
             course: { id: 'do_1', name: 'Self assessment', status: 'Draft', versionKey: '1', selfAssessment: true },
-            competencies: [{ competencyId: 'C1', name: 'Eclampsia', level: null }],
+            competencies: [{ competencyId: 'C1', name: 'Eclampsia', level: 2 }],
             resources: [
               {
                 contentId: 'q1',
@@ -275,92 +271,56 @@ describe('AiReviewCoursePageComponent', () => {
                 skipReason: null,
                 level: 1,
               },
-              {
-                contentId: 'q2',
-                name: 'Level 2 : Plans',
-                kind: 'quiz',
-                mimeType: 'application/json',
-                durationSec: null,
-                path: [],
-                reviewable: true,
-                skipReason: null,
-                level: 2,
-              },
             ],
           }),
         ),
       )
       const c = create()
       c.ngOnInit()
-      expect(c.levelMode()).toBe('perResource')
-      expect(c.levelValue()).toBe('each')
-      expect(c.levelOptions()[0]).toEqual({ value: 'each', label: 'Each part at its own level', hint: 'Levels 1, 2, from the part names' })
-      expect(c.validationMessage()).toBe('')
-      expect(c.buildOptions()).toMatchObject({ competencyId: 'C1', level: null, levelMode: 'perResource' })
-
-      // One level for the whole course instead.
-      c.setLevel('2')
-      expect(c.levelMode()).toBe('single')
-      expect(c.buildOptions()).toMatchObject({ level: 2, levelMode: 'single' })
-      c.setLevel('each')
-      expect(c.levelValue()).toBe('each')
+      expect(c.levelOptions().some(o => o.value === 'each')).toBe(false)
+      expect(c.buildOptions()).toMatchObject({ competencyId: 'C1', level: 2, levelMode: 'single' })
     })
 
-    it('judges a course mapped at several levels against all of them by default', () => {
+    it('turns the domain review off, and says why, for a course mapped to several levels or competencies', () => {
       api.preview.mockReturnValue(
         of(preview({ competencies: [{ competencyId: 'P1', name: 'Pregnancy Identification', level: 1, levels: [1, 2] }] })),
       )
       const c = create()
       c.ngOnInit()
-      expect(c.competencyOptions()[0]).toMatchObject({ value: 'P1', hint: 'On this course · Levels 1, 2' })
-      expect(c.levelMode()).toBe('courseLevels')
-      expect(c.levelValue()).toBe('course')
-      expect(c.levelOptions()[0]).toEqual({ value: 'course', label: 'All course levels', hint: 'Levels 1, 2, together' })
+      expect(c.severalLevels()).toBe(true)
+      expect(c.canJudge()).toBe(false)
+      expect(c.domain()).toBe(false)
+      expect(c.mappedSummary()).toEqual(['Pregnancy Identification · Levels 1, 2'])
+      // The checklist review still runs, sending no competency.
       expect(c.validationMessage()).toBe('')
-      expect(c.buildOptions()).toMatchObject({ competencyId: 'P1', level: null, levelMode: 'courseLevels' })
+      expect(c.buildOptions()).toMatchObject({ addie: true, domain: false, competencyId: null, level: null, levelMode: 'single' })
+      // Forced on, Start refuses with the reason.
+      c.domain.set(true)
+      expect(c.validationMessage()).toBe(ONE_LEVEL_ONLY)
 
-      c.setLevel('2')
-      expect(c.buildOptions()).toMatchObject({ level: 2, levelMode: 'single' })
-      c.setLevel('course')
-      expect(c.levelMode()).toBe('courseLevels')
-    })
-
-    it('judges a course that maps several competencies against all of them, each at its levels, by default', () => {
       api.preview.mockReturnValue(
         of(
           preview({
             competencies: [
               { competencyId: '254', name: 'Pre, intra and post-op care', level: 3, levels: [3] },
-              { competencyId: 'UP-C2', name: 'गर्भावस्था की पहचान', level: 1, levels: [1, 2, 3, 4] },
+              { competencyId: 'UP-C2', name: 'गर्भावस्था की पहचान', level: 1, levels: [1] },
             ],
           }),
         ),
       )
-      const c = create()
-      c.ngOnInit()
-      expect(c.allMapped()).toBe(true)
-      expect(c.competencyValue()).toBe('__mapped__')
-      expect(c.competencyOptions()[0]).toMatchObject({ value: '__mapped__', label: 'All competencies on the course' })
-      expect(c.mappedSummary()).toEqual(['Pre, intra and post-op care · Level 3', 'गर्भावस्था की पहचान · Levels 1, 2, 3, 4'])
-      expect(c.validationMessage()).toBe('')
-      expect(c.buildOptions()).toMatchObject({ competencyId: null, level: null, levelMode: 'courseMapping' })
-
-      // One competency on its own: its mapped levels together.
-      c.selectCompetency('UP-C2')
-      expect(c.allMapped()).toBe(false)
-      expect(c.levelMode()).toBe('courseLevels')
-      expect(c.buildOptions()).toMatchObject({ competencyId: 'UP-C2', levelMode: 'courseLevels' })
-
-      c.selectCompetency('__mapped__')
-      expect(c.buildOptions()).toMatchObject({ competencyId: null, levelMode: 'courseMapping' })
+      const two = create()
+      two.ngOnInit()
+      expect(two.severalLevels()).toBe(true)
+      expect(two.domain()).toBe(false)
+      expect(two.competencyOptions().some(o => o.label === 'All competencies on the course')).toBe(false)
     })
 
-    it('keeps one level for an ordinary course, with no per-part choice', () => {
+    it('keeps one level for an ordinary course, sent with no audience', () => {
       const c = create()
       c.ngOnInit()
-      expect(c.levelMode()).toBe('single')
-      expect(c.levelOptions().some(o => o.value === 'each')).toBe(false)
-      expect(c.buildOptions()).toMatchObject({ level: 2, levelMode: 'single' })
+      expect(c.severalLevels()).toBe(false)
+      expect(c.levelValue()).toBe('2')
+      expect(c.buildOptions()).toMatchObject({ level: 2, levelMode: 'single', audience: '', positionCode: null })
     })
 
     it('offers "watch videos in full" only when the course has a video', () => {
@@ -544,7 +504,7 @@ describe('AiReviewCoursePageComponent', () => {
         level: 2,
         levelMode: 'single',
         positionCode: null,
-        audience: 'ANM / ASHA frontline health workers',
+        audience: '',
         language: 'auto',
         reportLanguage: 'en',
         context: 'rural clinics',
@@ -616,18 +576,6 @@ describe('AiReviewCoursePageComponent', () => {
       c.selectAll(true)
       c.start()
       expect(api.start).toHaveBeenCalledWith('do_1', c.buildOptions(), null)
-    })
-  })
-
-  describe('audience', () => {
-    it('starts empty and must be picked before the review can start', () => {
-      const c = create(false)
-      c.ngOnInit()
-      expect(c.audience()).toBe('')
-      expect(c.validationMessage()).toBe('Pick the audience: who the content is for (a position from the list, or type your own).')
-      expect(c.judgedFor()).toBe('the audience you pick above')
-      c.audience.set('ANM')
-      expect(c.validationMessage()).toBe('')
     })
   })
 
@@ -911,6 +859,61 @@ describe('AiReviewCoursePageComponent', () => {
     })
   })
 
+  describe('a course already reviewed', () => {
+    const entry = (id: string, status: string) => ({
+      id,
+      status,
+      requestedBy: { id: 'u1', name: 'Asha' },
+      progress: { done: 1, total: 1 },
+      summary: null,
+      costUsd: 0,
+      createdAt: '',
+      finishedAt: null,
+    })
+
+    it('opens its current report instead of the setup form', () => {
+      api.history.mockReturnValue(of([entry('r-failed', 'failed'), entry('r-done', 'done'), entry('r-old', 'done')] as never))
+      api.get.mockReturnValue(of(review({ id: 'r-done', status: 'done' })))
+      const c = create()
+      c.ngOnInit()
+      expect(api.get).toHaveBeenCalledWith('r-done')
+      expect(router.navigate).toHaveBeenCalledWith([], expect.objectContaining({ queryParams: { review: 'r-done' } }))
+      expect(c.currentStep()).toBe('report')
+      // "Review again" still goes to the form, and the report is not opened again behind it.
+      c.newReview()
+      c.loadHistory()
+      expect(c.currentStep()).toBe('setup')
+    })
+
+    it('shows a running review instead', () => {
+      api.preview.mockReturnValue(of(preview({ activeReviewId: 'r-running' })))
+      api.history.mockReturnValue(of([entry('r-running', 'running'), entry('r-done', 'done')] as never))
+      api.get.mockReturnValue(of(review({ id: 'r-running', status: 'running' })))
+      const c = create()
+      c.ngOnInit()
+      expect(api.get).toHaveBeenCalledWith('r-running')
+      expect(api.get).not.toHaveBeenCalledWith('r-done')
+    })
+
+    it('shows the review named in the link, when there is one', () => {
+      query = { review: 'r-picked' }
+      api.history.mockReturnValue(of([entry('r-done', 'done')] as never))
+      api.get.mockReturnValue(of(review({ id: 'r-picked', status: 'done' })))
+      const c = create()
+      c.ngOnInit()
+      expect(api.get).toHaveBeenCalledWith('r-picked')
+      expect(api.get).not.toHaveBeenCalledWith('r-done')
+    })
+
+    it('shows the setup form for a course with no finished review', () => {
+      api.history.mockReturnValue(of([entry('r-failed', 'failed')] as never))
+      const c = create()
+      c.ngOnInit()
+      expect(api.get).not.toHaveBeenCalled()
+      expect(c.currentStep()).toBe('setup')
+    })
+  })
+
   describe('a review opened by its link', () => {
     it('shows the loading card, not the setup form, until the review is read', () => {
       const read = new Subject<IAiReview>()
@@ -960,14 +963,14 @@ describe('AiReviewCoursePageComponent', () => {
       c.ngOnInit()
       settle()
       api.reuse.mockClear()
-      c.audience.set('A')
+      c.context.set('r')
       TestBed.tick()
-      c.audience.set('AS')
+      c.context.set('ru')
       TestBed.tick()
-      c.audience.set('ASHA')
+      c.context.set('rural')
       settle()
       expect(api.reuse).toHaveBeenCalledTimes(1)
-      expect(api.reuse).toHaveBeenLastCalledWith('do_1', expect.objectContaining({ audience: 'ASHA' }))
+      expect(api.reuse).toHaveBeenLastCalledWith('do_1', expect.objectContaining({ context: 'rural' }))
     })
 
     it('does not ask while the settings cannot start a review, and treats a failed check as none reused', () => {
@@ -1053,86 +1056,30 @@ describe('AiReviewCoursePageComponent', () => {
       c.setLevel('9')
       expect(c.levelKnown()).toBe(false)
     })
+  })
 
-    it('shows parts with no level of their own, and prices no domain review for them without a fallback level', () => {
+  describe('the line under the Competency field', () => {
+    it('says what is chosen, for a course with one competency or with none', () => {
       api.preview.mockReturnValue(
         of(
           preview({
-            course: { id: 'do_1', name: 'SA', status: 'Draft', versionKey: '1', selfAssessment: true },
-            competencies: [{ competencyId: 'C1', name: 'E', level: null, levels: [] }],
-            resources: [
-              {
-                contentId: 'q1',
-                name: 'Level 1 : A',
-                kind: 'quiz',
-                mimeType: 'application/json',
-                durationSec: null,
-                path: [],
-                reviewable: true,
-                skipReason: null,
-                level: 1,
-                estimate: { base: 0.2, addie: 0.04, domain: 0.15, watch: 0 },
-              },
-              {
-                contentId: 'q0',
-                name: 'Intro quiz',
-                kind: 'quiz',
-                mimeType: 'application/json',
-                durationSec: null,
-                path: [],
-                reviewable: true,
-                skipReason: null,
-                level: null,
-                estimate: { base: 0.2, addie: 0.04, domain: 0.15, watch: 0 },
-              },
-            ],
+            competencies: [{ competencyId: 'UP-C2', name: 'Pregnancy identification', level: 1, levels: [1] }],
+            competencyCatalog: [{ competencyId: 'AM', name: 'AMTSL', levels: [{ level: 2, label: 'Applies' }] }],
           }),
         ),
       )
       const c = create()
       c.ngOnInit()
-      expect(c.levelMode()).toBe('perResource')
-      expect(c.unlevelledParts().map(r => r.contentId)).toEqual(['q0'])
-      // No fallback level: the intro quiz gets no domain review, so no domain cost.
-      expect(c.estimateUsd()).toBe(0.63)
-      c.setLevel('2')
-      c.setLevel('each')
-      expect(c.level()).toBe(2)
-      expect(c.estimateUsd()).toBe(0.78)
-    })
-  })
-
-  describe('the line under the Competency field', () => {
-    const twoMapped = () =>
-      preview({
-        competencies: [
-          { competencyId: '254', name: 'Pre, intra and post-op care', level: 3, levels: [3] },
-          { competencyId: 'UP-C2', name: 'Pregnancy identification', level: 1, levels: [1, 2, 3, 4] },
-        ],
-        competencyCatalog: [{ competencyId: 'AM', name: 'AMTSL', levels: [{ level: 2, label: 'Applies' }] }],
-      })
-
-    it('describes every choice as it is', () => {
-      api.preview.mockReturnValue(of(twoMapped()))
-      const c = create()
-      c.ngOnInit()
-      expect(c.competencyHint()).toBe(
-        'Both competencies on the course are used, each at the levels it is mapped at. To judge against just one, or a different competency, pick it from the list.',
-      )
-
-      c.selectCompetency('UP-C2')
-      expect(c.competencyHint()).toBe(
-        'Only this course competency is judged at its mapped levels (1, 2, 3, 4). To include the others, pick "All competencies on the course".',
-      )
       c.setLevel('2')
       expect(c.competencyHint()).toBe(
-        'Only this course competency is judged at Level 2. To include the others, pick "All competencies on the course".',
+        "The course's competency is chosen for you at Level 2. Pick another to judge against a different one.",
       )
-
       c.selectCompetency('AM')
       expect(c.competencyHint()).toBe(
-        'This competency is not mapped on the course, so pick the level to judge against. To go back, pick one of the course\'s competencies or "All competencies on the course".',
+        "This competency is not mapped on the course, so pick the level to judge against. To go back, pick the course's competency.",
       )
+      c.preview.update(p => p && { ...p, competencies: [] })
+      expect(c.competencyHint()).toBe('This course has no competency set, so pick one and its level to judge against.')
     })
 
     it("says the course's only competency was chosen for you", () => {
@@ -1173,15 +1120,10 @@ describe('AiReviewCoursePageComponent', () => {
         ],
       })
 
-    it('takes the position code from the audience picked, and only from the list', () => {
+    it('sends no position: no audience is picked any more', () => {
       api.preview.mockReturnValue(of(withPositions()))
       const c = create()
       c.ngOnInit()
-      c.audience.set(' anm ')
-      expect(c.position()).toEqual({ code: 'ANM', name: 'ANM' })
-      expect(c.buildOptions().positionCode).toBe('ANM')
-      c.audience.set('Block health officer')
-      expect(c.position()).toBeNull()
       expect(c.buildOptions().positionCode).toBeNull()
     })
 
@@ -1190,13 +1132,12 @@ describe('AiReviewCoursePageComponent', () => {
       api.fracRole.mockReturnValue(of({ role, roleNote: null }))
       const c = create()
       c.ngOnInit()
-      c.audience.set('ANM')
       settle()
       expect(api.fracRole).not.toHaveBeenCalled()
 
       c.domainStyle.set('frac')
       settle()
-      expect(api.fracRole).toHaveBeenCalledWith('do_1', expect.objectContaining({ domainStyle: 'frac', positionCode: 'ANM' }))
+      expect(api.fracRole).toHaveBeenCalledWith('do_1', expect.objectContaining({ domainStyle: 'frac', positionCode: null }))
       expect(c.roleCheck()).toEqual({ role, roleNote: null })
       expect(c.roleChecking()).toBe(false)
     })
@@ -1206,7 +1147,6 @@ describe('AiReviewCoursePageComponent', () => {
       const c = create()
       c.ngOnInit()
       c.domainStyle.set('frac')
-      c.levelMode.set('single')
       c.level.set(null)
       expect(c.roleWaiting()).toMatch(/needs a level/)
       c.domainStyle.set('plain')
@@ -1218,7 +1158,6 @@ describe('AiReviewCoursePageComponent', () => {
       api.fracRole.mockReturnValue(NEVER)
       const c = create()
       c.ngOnInit()
-      c.audience.set('ANM')
       c.domainStyle.set('frac')
       settle()
       expect(c.roleChecking()).toBe(true)
@@ -1232,10 +1171,23 @@ describe('AiReviewCoursePageComponent', () => {
       api.fracRole.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 502 })))
       const c = create()
       c.ngOnInit()
-      c.audience.set('ANM')
       c.domainStyle.set('frac')
       settle()
       expect(c.roleCheck()).toEqual({ role: null, roleNote: 'The FRAC role data could not be read just now.' })
+    })
+  })
+
+  describe('one report per course', () => {
+    it('opens the newer report in place of one it replaced (an old link, the admin report)', done => {
+      const c = create()
+      api.get.mockImplementation((id: string) =>
+        of(id === 'r-old' ? review({ id: 'r-old', status: 'done', supersededBy: 'r-new' }) : review({ id: 'r-new', status: 'done' })),
+      )
+      c.poll('r-old').subscribe(r => {
+        expect(r.id).toBe('r-new')
+        expect(api.get).toHaveBeenCalledWith('r-new')
+        done()
+      })
     })
   })
 
@@ -1272,7 +1224,8 @@ describe('AiReviewCoursePageComponent', () => {
         domainStyle: 'plain',
         competencyId: 'C1',
         level: 3,
-        audience: 'Staff Nurse',
+        // An earlier review's audience is not carried over: none is chosen any more.
+        audience: '',
         language: 'hi',
         context: 'rural',
       })
@@ -1371,16 +1324,6 @@ describe('AiReviewCoursePageComponent', () => {
     })
   })
 
-  it('judges for the audience picked, and never shows a guessed one while it is empty', () => {
-    const c = create()
-    c.ngOnInit()
-    expect(c.judgedFor()).toBe('ANM / ASHA frontline health workers')
-    c.audience.set('ANM')
-    expect(c.judgedFor()).toBe('ANM')
-    c.audience.set('  ')
-    expect(c.judgedFor()).toBe('the audience you pick above')
-  })
-
   it('labels statuses and durations for people', () => {
     const c = create()
     expect(c.statusLabel('queued')).toBe('Waiting to start')
@@ -1434,12 +1377,13 @@ describe('the AI Studio look of the review pages', () => {
   it.each(pages)('says plainly what Plain and FRAC each check (%s)', file => {
     const html = read(file)
     expect(html).toContain('<b>Is it correct?</b> A senior clinician checks it teaches what this level describes')
-    // Plain judges depth and work setting against the audience (D5, D6), not just tone.
-    expect(html).toContain('at the right depth for your audience and in their real work setting.')
+    // Plain judges depth and work setting against the competency's own cadre (D5, D6), not just tone.
+    expect(html).toContain('at the right depth for the health workers this level is meant for and in their real work setting.')
     expect(html).not.toContain('tone only')
     expect(html).toContain('<b>Is it pitched right for the role?</b> A FRAC expert checks it sits at this level')
-    // Without activities for this competency, D5 and D6 fall back to the audience.
-    expect(html).toContain('prepares the position for its FRAC activities (when it has none for this competency: suits your audience).')
+    // There is no audience to choose: FRAC judges against the health workers of the competency.
+    expect(html).toContain('prepares the health workers for the activities that need it.')
+    expect(html).not.toContain('your audience')
     // FRAC checks clinical accuracy itself (D7), so it is covered with the checklist off.
     expect(html).toContain('Says which level it really fits. It also checks protocols, thresholds and doses are correct.')
     expect(html).not.toContain('does not check clinical accuracy')
@@ -1451,7 +1395,6 @@ describe('the AI Studio look of the review pages', () => {
     expect(AI_REVIEW_FRAC_ENABLED).toBe(false)
     const html = read(file)
     expect(html).toMatch(/@if \(fracEnabled\) \{\s*<fieldset class="air-segment">/)
-    expect(html).toContain('} @else if (position() && fracEnabled) {')
   })
 
   it('points to Course Details, where the course name, description and competencies are edited', () => {

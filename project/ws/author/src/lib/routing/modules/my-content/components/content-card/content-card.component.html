@@ -50,6 +50,8 @@
           <mat-icon class="duration-icon">access_time</mat-icon>{{ data.duration | pipeDurationTransform: 'hms' }}
         </span>
       </p>
+      <!-- A course with an AI review report: opens the report. -->
+      <ws-auth-ai-reviewed-mark class="ai-mark-row" [courseId]="data.identifier" [contentType]="data.contentType" />
     </mat-card-content>
     <mat-card-actions>
       <span *ngIf="(data.status && data.status !== 'Draft') || isForRevision" class="course-status-text" [ngClass]="getStatusClass()">
@@ -144,13 +146,18 @@
         <span class="font-weight-500 list-title-text">{{ data.name || 'Untitled Content' }}</span>
       </a>
     </div>
-    <div class="competency-row" *ngIf="addedCompetency?.length > 0">
+    <!-- The course's tags in one row: its competencies, then "AI reviewed" when it has a report. -->
+    <div class="competency-row" *ngIf="addedCompetency?.length > 0; else aiMarkAlone">
       <ng-container *ngFor="let comp of addedCompetency">
         <span *ngIf="comp" class="competency-chip" [matTooltip]="comp.name || comp.competencyName" matTooltipPosition="above">
           {{ comp.code }}<ng-container *ngIf="!data.competency && comp.level"> - {{ comp.level }}</ng-container>
         </span>
       </ng-container>
+      <ws-auth-ai-reviewed-mark [courseId]="data.identifier" [contentType]="data.contentType" />
     </div>
+    <ng-template #aiMarkAlone>
+      <ws-auth-ai-reviewed-mark class="ai-mark-row" [courseId]="data.identifier" [contentType]="data.contentType" />
+    </ng-template>
     <p class="fs-13 margin-remove flex items-center flex-wrap">
       <span
         *ngIf="(data.status && data.status !== 'Draft') || isForRevision"

@@ -91,6 +91,98 @@
   color: $air-muted;
 }
 
+// The "i" beside a score's label, and what it opens: inside the card (which clips anything
+// that floats outside it), in normal case, not the label's small capitals.
+.air-score-label.air-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.air-info-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: $air-muted;
+  cursor: pointer;
+
+  &:hover,
+  &[aria-expanded='true'] {
+    color: $air-primary;
+    background: $air-primary-soft;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 1px;
+  }
+}
+
+.air-info-panel {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid $air-line;
+  background: $air-canvas;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-transform: none;
+  color: $air-text;
+}
+
+.air-info-title {
+  font-weight: 700;
+}
+
+.air-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.air-info-item b {
+  margin-right: 6px;
+  color: $air-primary;
+}
+
+.air-info-source {
+  font-size: 12px;
+  color: $air-muted;
+}
+
+.air-info-close {
+  align-self: flex-end;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: $air-primary;
+  cursor: pointer;
+
+  &:hover {
+    background: $air-primary-soft;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+  }
+}
+
 .air-score-main {
   font-size: 16px;
   font-weight: 600;

@@ -1,4 +1,11 @@
-<dialog #dialog class="air-ev" aria-labelledby="air-ev-title" (close)="onClosed()" (click)="onDialogClick($event)">
+<dialog
+  #dialog
+  class="air-ev"
+  aria-labelledby="air-ev-title"
+  (close)="onClosed()"
+  (click)="onDialogClick($event)"
+  (keydown)="onDialogKeydown($event)"
+>
   @if (evidence(); as e) {
     <div class="air-ev-panel">
       <header class="air-ev-head">
@@ -62,7 +69,40 @@
                 @for (q of questions(); track q.n) {
                   <div class="air-ev-question">
                     <span class="air-ev-qnum">Q{{ q.n }}</span>
-                    <p>{{ q.text }}</p>
+                    <p>{{ q.question }}</p>
+                    <!-- The options as the quiz has them: the marked answer, the suggested one and what is wrong with each. -->
+                    @if (q.options?.length) {
+                      <ul class="air-ev-options" aria-label="Options">
+                        @for (o of q.options; track o.label) {
+                          <li
+                            class="air-ev-option"
+                            [class.air-ev-option--marked]="o.marked"
+                            [class.air-ev-option--suggested]="isSuggested(q, o.label)"
+                            [class.air-ev-option--flagged]="!!optionProblem(q, o.label)"
+                          >
+                            <span class="air-ev-option-label">{{ o.label }}</span>
+                            <span class="air-ev-option-body">
+                              <span class="air-ev-option-text">{{ o.text }}</span>
+                              @if (o.marked || isSuggested(q, o.label)) {
+                                <span class="air-ev-option-tags">
+                                  @if (o.marked) {
+                                    <span class="air-ev-tag air-ev-tag--marked"
+                                      ><ws-auth-air-icon name="check" [size]="12" /> <ng-container i18n>Marked answer</ng-container></span
+                                    >
+                                  }
+                                  @if (isSuggested(q, o.label)) {
+                                    <span class="air-ev-tag air-ev-tag--suggested" i18n>Suggested answer</span>
+                                  }
+                                </span>
+                              }
+                              @if (optionProblem(q, o.label); as problem) {
+                                <span class="air-ev-option-problem">{{ problem }}</span>
+                              }
+                            </span>
+                          </li>
+                        }
+                      </ul>
+                    }
                   </div>
                 }
               </div>
@@ -159,26 +199,96 @@
             }
             {{ e.title }}
           </h2>
-          <span class="air-chip air-chip--{{ verdictTone(e.verdict) }}">{{ verdictLabel(e.verdict) }}</span>
+          <span class="air-chip air-chip--{{ chip().tone }}">{{ chip().label }}</span>
 
-          @if (e.notes.length) {
-            <div class="air-ev-block">
-              <span class="air-ev-label" i18n>What the reviewer saw</span>
-              @for (note of e.notes; track $index) {
-                <p class="air-ev-note">{{ note }}</p>
-              }
+          @if (e.withdrawn) {
+            <!-- Withdrawn: the claim is not repeated, only why it was not judged. -->
+            <div class="air-ev-block air-ev-withdrawn" role="note">
+              <span class="air-ev-label" i18n>Not judged</span>
+              <p>{{ e.withdrawn }}</p>
             </div>
-          }
-          @if (e.fix) {
-            <div class="air-ev-block air-ev-fix">
-              <span class="air-ev-label" i18n>Suggested fix</span>
-              <p>{{ e.fix }}</p>
-            </div>
+          } @else {
+            @if (e.borderline) {
+              <div class="air-ev-block air-ev-check" role="note">
+                <span class="air-ev-label"
+                  ><ws-auth-air-icon name="warning" [size]="14" /> <ng-container i18n>Please check</ng-container></span
+                >
+                <p i18n>
+                  The review could not confirm this from the material. Treat it as a question to check, not as a fault, before changing
+                  anything.
+                </p>
+                @if (e.check) {
+                  <p class="air-ev-check-why">{{ e.check }}</p>
+                }
+              </div>
+            }
+            @if (e.question && answerView(e.question); as a) {
+              <div class="air-ev-block air-ev-answer air-ev-answer--{{ a.tone }}">
+                <span class="air-ev-label">{{ a.title }}</span>
+                <p><b i18n>Marked:</b> {{ a.marked }}</p>
+                @if (a.suggested) {
+                  <p><b i18n>Suggested:</b> {{ a.suggested }}</p>
+                }
+                @if (a.why) {
+                  <p>{{ a.why }}</p>
+                }
+                @if (a.source) {
+                  <p class="air-ev-source-line"><b i18n>Source:</b> {{ a.source }}</p>
+                }
+              </div>
+            }
+            @if (e.notes.length) {
+              <div class="air-ev-block">
+                <span class="air-ev-label">
+                  @if (e.question) {
+                    <ng-container i18n>Other problems with this question</ng-container>
+                  } @else if (e.borderline) {
+                    <ng-container i18n>What the review reported (not confirmed)</ng-container>
+                  } @else {
+                    <ng-container i18n>What the reviewer saw</ng-container>
+                  }
+                </span>
+                @for (note of e.notes; track $index) {
+                  <p class="air-ev-note">{{ note }}</p>
+                }
+              </div>
+            }
+            @if (e.fix) {
+              <div class="air-ev-block air-ev-fix">
+                <span class="air-ev-label">
+                  @if (e.question) {
+                    <ng-container i18n>What to change or add</ng-container>
+                  } @else {
+                    <ng-container i18n>Suggested fix</ng-container>
+                  }
+                </span>
+                <p>{{ e.fix }}</p>
+              </div>
+            }
           }
         </section>
       </div>
 
       <footer class="air-ev-foot">
+        <!-- Step through the rest of the list without closing: the resource's fixes, or its checklist. -->
+        @if (steps().length > 1) {
+          <nav class="air-ev-nav" aria-label="Move between findings">
+            <button type="button" class="air-btn air-btn--secondary air-ev-step" [disabled]="stepIndex() === 0" (click)="go(-1)">
+              <ws-auth-air-icon name="chevronLeft" [size]="18" /> <ng-container i18n>Previous</ng-container>
+            </button>
+            <span class="air-ev-count" aria-live="polite"
+              >{{ stepIndex() + 1 }} <ng-container i18n>of</ng-container> {{ steps().length }}</span
+            >
+            <button
+              type="button"
+              class="air-btn air-btn--secondary air-ev-step"
+              [disabled]="stepIndex() === steps().length - 1"
+              (click)="go(1)"
+            >
+              <ng-container i18n>Next</ng-container> <ws-auth-air-icon name="chevronRight" [size]="18" />
+            </button>
+          </nav>
+        }
         @if (fileUrl(); as url) {
           <a class="air-btn air-btn--ghost" [href]="url" target="_blank" rel="noopener noreferrer">
             @if (kind() === 'html') {

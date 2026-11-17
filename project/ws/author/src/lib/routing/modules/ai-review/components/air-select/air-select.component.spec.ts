@@ -102,6 +102,61 @@ describe('AirSelectComponent', () => {
     expect(component.open()).toBe(false)
   })
 
+  describe('choosing several', () => {
+    let sets: string[][]
+    const levels: AirSelectOption[] = [
+      { value: 'course', label: 'All mapped levels' },
+      { value: '1', label: 'Level 1' },
+      { value: '2', label: 'Level 2' },
+      { value: '3', label: 'Level 3' },
+    ]
+    const items = () => Array.from(fixture.nativeElement.querySelectorAll('[role="option"]')) as HTMLElement[]
+
+    beforeEach(() => {
+      fixture.componentRef.setInput('options', levels)
+      fixture.componentRef.setInput('multiple', true)
+      fixture.componentRef.setInput('exclusive', ['course'])
+      fixture.componentRef.setInput('values', ['1', '3'])
+      sets = []
+      component.valuesChange.subscribe(v => sets.push(v))
+      fixture.detectChanges()
+    })
+
+    it('shows every choice on the button and ticks them in the list, which allows several', () => {
+      expect(trigger().textContent).toContain('Level 1, Level 3')
+      trigger().click()
+      fixture.detectChanges()
+      expect(fixture.nativeElement.querySelector('[role="listbox"]').getAttribute('aria-multiselectable')).toBe('true')
+      expect(items().map(i => i.getAttribute('aria-selected'))).toEqual(['false', 'true', 'false', 'true'])
+      expect(items()[1].querySelector('.air-select-box--on')).not.toBeNull()
+      // The exclusive choice has no tick box.
+      expect(items()[0].querySelector('.air-select-box')).toBeNull()
+    })
+
+    it('toggles a level and stays open; an exclusive choice stands alone and closes', () => {
+      trigger().click()
+      fixture.detectChanges()
+      items()[2].click()
+      fixture.detectChanges()
+      expect(sets.pop()).toEqual(['1', '3', '2'])
+      expect(component.open()).toBe(true)
+      items()[1].click()
+      expect(sets.pop()).toEqual(['3'])
+      items()[0].click()
+      fixture.detectChanges()
+      expect(sets.pop()).toEqual(['course'])
+      expect(component.open()).toBe(false)
+    })
+
+    it('clears the exclusive choice when a level is picked', () => {
+      fixture.componentRef.setInput('values', ['course'])
+      fixture.detectChanges()
+      component.openList()
+      component.choose(2)
+      expect(sets.pop()).toEqual(['2'])
+    })
+  })
+
   describe('with search, for long lists', () => {
     const search = () => fixture.nativeElement.querySelector('.air-select-search input') as HTMLInputElement
     const typeInSearch = (text: string) => {

@@ -15,8 +15,8 @@
   (click)="toggle()"
   (keydown)="onKeydown($event)"
 >
-  <span class="air-select-value" [class.air-select-value--placeholder]="!selected()" [attr.title]="selected()?.label || null">
-    {{ selected()?.label || placeholder() }}
+  <span class="air-select-value" [class.air-select-value--placeholder]="!display()" [attr.title]="display() || null">
+    {{ display() || placeholder() }}
   </span>
   <ws-auth-air-icon class="air-select-chevron" name="chevronDown" />
 </button>
@@ -40,26 +40,40 @@
         />
       </div>
     }
-    <ul class="air-select-list" role="listbox" [attr.id]="id + '-list'" [attr.aria-labelledby]="labelledBy()" tabindex="-1">
+    <ul
+      class="air-select-list"
+      role="listbox"
+      [attr.id]="id + '-list'"
+      [attr.aria-labelledby]="labelledBy()"
+      [attr.aria-multiselectable]="multiple() || null"
+      tabindex="-1"
+    >
       @for (option of visible(); track option.value; let i = $index) {
         <li
           role="option"
           class="air-select-option"
           [attr.id]="id + '-opt-' + i"
-          [attr.aria-selected]="option.value === value()"
+          [attr.aria-selected]="isSelected(option)"
           [class.air-select-option--active]="i === active()"
-          [class.air-select-option--selected]="option.value === value()"
+          [class.air-select-option--selected]="isSelected(option)"
           (mousedown)="$event.preventDefault()"
           (mouseenter)="active.set(i)"
           (click)="choose(i)"
         >
+          @if (isCheckable(option)) {
+            <span class="air-select-box" [class.air-select-box--on]="isSelected(option)" aria-hidden="true">
+              @if (isSelected(option)) {
+                <ws-auth-air-icon name="check" [size]="14" />
+              }
+            </span>
+          }
           <span class="air-select-option-text">
             <span>{{ option.label }}</span>
             @if (option.hint) {
               <span class="air-select-hint">{{ option.hint }}</span>
             }
           </span>
-          @if (option.value === value()) {
+          @if (isSelected(option) && !isCheckable(option)) {
             <ws-auth-air-icon name="check" [size]="18" />
           }
         </li>

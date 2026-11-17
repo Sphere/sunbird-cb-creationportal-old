@@ -1267,3 +1267,32 @@ input[type='radio'] {
     border: 1px dashed $air-border;
   }
 }
+
+// A course mapped to several competencies or levels: why the domain review is off.
+.air-one-level {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #f2d9a0;
+  background: #fef6e7;
+  color: $air-amber;
+
+  p {
+    margin: 0;
+  }
+
+  .air-small {
+    color: $air-text;
+    margin-top: 4px;
+  }
+
+  .air-mapped {
+    margin-top: 8px;
+  }
+}
+
+.air-one-level-title {
+  font-weight: 700;
+}

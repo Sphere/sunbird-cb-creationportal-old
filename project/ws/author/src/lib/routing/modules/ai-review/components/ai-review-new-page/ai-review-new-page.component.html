@@ -338,28 +338,7 @@
 
           <!-- Step 2: the learners -->
           <section class="air-card">
-            <h2 class="air-section-title"><span class="air-num">2</span> <ng-container i18n>About the learners</ng-container></h2>
-            <div class="air-field-row">
-              <div class="air-field" id="air-audience">
-                <span class="air-label" id="air-audience-label"
-                  ><ng-container i18n>Audience</ng-container> <span class="air-required">*</span></span
-                >
-                <ws-auth-air-combobox
-                  labelledBy="air-audience-label"
-                  placeholder="Pick a position or type who the files are for"
-                  [suggestions]="positionNames()"
-                  [value]="audience()"
-                  (valueChange)="audience.set($event)"
-                />
-                @if (lookupFailed().has('positions')) {
-                  <span class="air-hint air-hint--warn" i18n
-                    >The position list could not be loaded just now. Type who the files are for.</span
-                  >
-                } @else {
-                  <span class="air-hint" i18n>Pick a position from the list or type your own. Used to judge tone and fit.</span>
-                }
-              </div>
-            </div>
+            <h2 class="air-section-title"><span class="air-num">2</span> <ng-container i18n>Notes for the reviewer</ng-container></h2>
             <label class="air-field">
               <span class="air-label" i18n>Anything the reviewer should know (optional)</span>
               <textarea
@@ -496,7 +475,7 @@
                       labelledBy="air-level-label"
                       placeholder="Pick a level"
                       [options]="levelOptions()"
-                      [value]="level() ? '' + level() : null"
+                      [value]="levelValue()"
                       [invalid]="!level()"
                       (valueChange)="setLevel($event)"
                     />
@@ -505,21 +484,6 @@
                     }
                   </div>
                 </div>
-                <p class="air-positions">
-                  <span class="air-muted" i18n>Judged for</span>
-                  @if (audience().trim()) {
-                    <span class="air-pos">{{ judgedFor() }}</span>
-                  } @else {
-                    <span class="air-pos air-pos--empty" i18n>Not picked yet</span>
-                  }
-                  @if (!audience().trim()) {
-                    <span class="air-muted air-small" i18n>(pick it in Audience above)</span>
-                  } @else if (position() && fracEnabled) {
-                    <span class="air-muted air-small" i18n>(FRAC position, from Audience above)</span>
-                  } @else {
-                    <span class="air-muted air-small" i18n>(from Audience above)</span>
-                  }
-                </p>
                 <!-- The Plain/FRAC choice: hidden while FRAC is not offered (utils/features.ts). -->
                 @if (fracEnabled) {
                   <fieldset class="air-segment">
@@ -535,8 +499,8 @@
                       <strong i18n>Plain</strong>
                       <span class="air-small" i18n
                         ><b>Is it correct?</b> A senior clinician checks it teaches what this level describes, with correct protocols,
-                        thresholds and steps for Indian public health, at the right depth for your audience and in their real work
-                        setting.</span
+                        thresholds and steps for Indian public health, at the right depth for the health workers this level is meant for and
+                        in their real work setting.</span
                       >
                     </label>
                     <label class="air-segment-option" [class.air-segment-option--on]="domainStyle() === 'frac'">
@@ -550,8 +514,8 @@
                       <strong i18n>FRAC</strong>
                       <span class="air-small" i18n
                         ><b>Is it pitched right for the role?</b> A FRAC expert checks it sits at this level (not below or above), stays
-                        within it, and prepares the position for its FRAC activities (when it has none for this competency: suits your
-                        audience). Says which level it really fits. It also checks protocols, thresholds and doses are correct.</span
+                        within it, and prepares the health workers for the activities that need it. Says which level it really fits. It also
+                        checks protocols, thresholds and doses are correct.</span
                       >
                     </label>
                   </fieldset>
@@ -559,10 +523,8 @@
                 <ws-auth-air-role-check
                   each="each file"
                   [domainStyle]="domainStyle()"
-                  [positionName]="position()?.name || null"
                   [checking]="roleChecking()"
                   [check]="roleCheck()"
-                  [audience]="audience()"
                   [waiting]="roleWaiting()"
                 />
               </div>

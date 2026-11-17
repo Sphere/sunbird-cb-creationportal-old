@@ -178,3 +178,25 @@
   font-weight: 400;
   color: $air-muted;
 }
+
+// A multiple select: a tick box before each option that is chosen alongside others.
+.air-select-option-text {
+  flex: 1;
+}
+
+.air-select-box {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid $air-border;
+  background: $air-surface;
+  color: #fff;
+
+  &--on {
+    border-color: $air-primary;
+    background: $air-primary;
+  }
+}

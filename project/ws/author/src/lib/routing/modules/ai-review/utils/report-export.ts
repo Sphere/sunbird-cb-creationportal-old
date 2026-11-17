@@ -1,4 +1,4 @@
-import { NO_SOUND_FIX } from './issues'
+import { answerLines, indicatorNote, indicatorVerdict, NO_SOUND_FIX } from './issues'
 import type * as Xlsx from 'xlsx'
 import {
   IAiReview,
@@ -265,7 +265,7 @@ function fixListHtml(item: IAiReviewItem, groups: FixGroup[]): string {
       return `<p class="fixgrp">${esc(g.label)} <span class="muted">· ${esc(count)}</span></p><ul class="items">${g.issues
         .map(
           x =>
-            `<li>${x.id ? `<b>${esc(x.id)}</b> ` : ''}${esc(x.what)}${x.borderline ? ' <span class="chip amber">Borderline</span>' : ''}${
+            `<li>${x.id ? `<b>${esc(x.id)}</b> ` : ''}${esc(x.what)}${x.borderline ? ' <span class="chip amber">Please check</span>' : ''}${
               placeLabel(x.place) ? ` <span class="at">${esc(placeLabel(x.place))}</span>` : ''
             }${x.finding ? `<br><span class="note">${esc(x.finding).replace(/\n/g, '; ')}</span>` : ''}${
               x.check ? `<br><span class="check">Check by hand: ${esc(x.check)}</span>` : ''
@@ -686,9 +686,9 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
             area.area,
             i.id,
             i.text,
-            VERDICT[i.verdict] || i.verdict,
-            i.note || '',
-            i.fix || '',
+            indicatorVerdict(i, VERDICT),
+            indicatorNote(i),
+            i.withdrawn ? '' : i.fix || '',
           ]),
         ),
       )
@@ -698,8 +698,8 @@ export function buildWorkbookSheets(review: IAiReview): Record<string, (string |
         item.name,
         q.n,
         q.question,
-        q.verdict === 'ok' ? 'OK' : 'Needs attention',
-        q.issues.join('; '),
+        q.verdict === 'ok' ? 'OK' : q.borderline ? 'Needs attention (please check)' : 'Needs attention',
+        [...answerLines(q), ...q.issues].join('; '),
         q.fix || '',
         DEMAND[q.demand || ''] || '',
       ]),

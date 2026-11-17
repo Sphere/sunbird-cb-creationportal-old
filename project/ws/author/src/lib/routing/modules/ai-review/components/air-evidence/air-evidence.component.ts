@@ -1,7 +1,8 @@
 import { DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, output, signal, viewChild } from '@angular/core'
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
-import { IAiReviewItem } from '../../models/ai-review.model'
+import { IAiReviewItem, IAiReviewQuestionFinding } from '../../models/ai-review.model'
+import { optionName } from '../../utils/issues'
 import { kindFromMime, kindLine, kindMeta } from '../../utils/resource-kind'
 import { AI_REVIEW_PACKAGE_BASE } from '../../services/ai-review.service'
 
@@ -20,6 +21,13 @@ export interface AirEvidence {
   at?: string
   atSec?: number
   page?: number
+  /** Not confirmed from the material: shown as "Please check", with why, never as a fault. */
+  borderline?: boolean
+  check?: string
+  /** Withdrawn by the service: shown as "Not judged" with this reason, never the claim itself. */
+  withdrawn?: string
+  /** A question check's finding in full: its options and the judgement of the marked answer. */
+  question?: IAiReviewQuestionFinding
 }
 
 /**
@@ -213,22 +221,83 @@ export class AirEvidenceComponent {
 
   /**
    * The questions the finding is about: the one a question check names (Q3), or those a
-   * checklist note names ("Q9 misstates…"), with their text from the review.
+   * checklist note names ("Q9 misstates…"), each with its options and the judgement of its
+   * marked answer when the review has them.
    */
-  readonly questions = computed(() => {
+  readonly questions = computed<IAiReviewQuestionFinding[]>(() => {
     const e = this.evidence()
     if (!e) {
       return []
     }
+    const all = e.item.result?.questions || []
     const own = /^Q(\d+)$/.exec(e.code)
     if (own) {
-      return [{ n: Number(own[1]), text: e.title }]
+      const n = Number(own[1])
+      return [e.question || all.find(q => q.n === n) || { n, question: e.title, verdict: 'issue', issues: [] }]
     }
-    const all = e.item.result?.questions || []
     return questionsNamed([e.at || '', ...e.notes, e.fix || ''].join(' \n '))
-      .map(n => ({ n, text: all.find(q => q.n === n)?.question || '' }))
-      .filter(q => q.text)
+      .map(n => all.find(q => q.n === n))
+      .filter((q): q is IAiReviewQuestionFinding => !!q && !!q.question)
       .slice(0, 6)
+  })
+
+  /** The judgement of the question's marked answer, worded for the panel; null when there is none to show. */
+  answerView(
+    q: IAiReviewQuestionFinding,
+  ): { tone: 'green' | 'red' | 'amber'; title: string; marked: string; suggested: string; why: string; source: string } | null {
+    const a = q.answer
+    if (!a) {
+      return null
+    }
+    const marked =
+      (q.options || [])
+        .filter(o => o.marked)
+        .map(o => optionName(q, o.label))
+        .join(', ') || 'none marked'
+    const suggested = (a.suggested || '')
+      .split(/,\s*/)
+      .filter(Boolean)
+      .map(l => optionName(q, l))
+      .join(', ')
+    if (a.verdict === 'wrong') {
+      return { tone: 'red', title: 'The marked answer is wrong', marked, suggested, why: a.why, source: a.source || '' }
+    }
+    if (a.verdict === 'check') {
+      return {
+        tone: 'amber',
+        title: 'Please check the marked answer',
+        marked,
+        suggested: '',
+        why: a.why || 'Check it with a subject expert.',
+        source: '',
+      }
+    }
+    return { tone: 'green', title: 'The marked answer is correct', marked, suggested: '', why: a.why, source: '' }
+  }
+
+  /** Whether an option is the one the reviewer says should be marked. */
+  isSuggested(q: IAiReviewQuestionFinding, label: string): boolean {
+    return q.answer?.verdict === 'wrong' && (q.answer.suggested || '').split(/,\s*/).includes(label)
+  }
+
+  /** What is wrong with one option, when the reviewer said. */
+  optionProblem(q: IAiReviewQuestionFinding, label: string): string {
+    return (q.optionIssues || []).find(x => x.option === label)?.problem || ''
+  }
+
+  /** The chip beside the title: "Please check" and "Not judged" before the plain verdict. */
+  readonly chip = computed(() => {
+    const e = this.evidence()
+    if (!e) {
+      return { label: '', tone: 'red' }
+    }
+    if (e.withdrawn) {
+      return { label: 'Not judged', tone: 'na' }
+    }
+    if (e.borderline) {
+      return { label: 'Please check', tone: 'amber' }
+    }
+    return { label: this.verdictLabel(e.verdict), tone: this.verdictTone(e.verdict) }
   })
   /** A question check of an HTML package: the question, not the package, is what to show. */
   readonly packageQuestion = computed(() => this.kind() === 'html' && /^Q\d+$/.test(this.evidence()?.code || ''))
@@ -313,6 +382,8 @@ export class AirEvidenceComponent {
       this.mediaError.set(false)
       this.evidence.set({ ...e, item })
     }
+    // The other findings of the same resource use the fresh link too, when stepped to.
+    this.steps.set(this.steps().map(s => (s.item.contentId === item.contentId ? { ...s, item } : s)))
   }
 
   refreshFailed(message: string): void {
@@ -320,7 +391,48 @@ export class AirEvidenceComponent {
     this.refreshError.set(message)
   }
 
-  open(evidence: AirEvidence): void {
+  /**
+   * The findings this one is stepped through with (a resource's "To fix" list, or its checklist),
+   * and where it stands in them: Previous and Next move along, without closing the pop-up.
+   */
+  readonly steps = signal<AirEvidence[]>([])
+  readonly stepIndex = signal(0)
+
+  /** Moves to the previous (-1) or next (+1) finding of the list, when there is one. */
+  go(delta: number): void {
+    const i = this.stepIndex() + delta
+    const next = this.steps()[i]
+    if (next) {
+      this.stepIndex.set(i)
+      this.show(next)
+    }
+  }
+
+  /** Left and right arrows step through the findings, except where they mean something else (a video, a field). */
+  onDialogKeydown(event: KeyboardEvent): void {
+    if ((event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') || this.steps().length < 2) {
+      return
+    }
+    const target = event.target as HTMLElement | null
+    if (target && /^(VIDEO|AUDIO|INPUT|TEXTAREA|SELECT|IFRAME)$/.test(target.tagName)) {
+      return
+    }
+    event.preventDefault()
+    this.go(event.key === 'ArrowLeft' ? -1 : 1)
+  }
+
+  /**
+   * Opens a finding. With `nav`, the list it belongs to and its place in it, so the pop-up can
+   * step through the rest without closing.
+   */
+  open(evidence: AirEvidence, nav?: { list: AirEvidence[]; index: number }): void {
+    this.steps.set(nav?.list.length ? nav.list : [])
+    this.stepIndex.set(nav?.list.length ? Math.max(0, Math.min(nav.list.length - 1, nav.index)) : 0)
+    this.show(evidence)
+  }
+
+  /** Puts a finding on screen, in the dialog already open or newly opened. */
+  private show(evidence: AirEvidence): void {
     this.mediaError.set(false)
     this.showPackagePage.set(false)
     this.refreshing.set(false)
@@ -335,6 +447,9 @@ export class AirEvidenceComponent {
       } else {
         el.setAttribute('open', '')
       }
+    } else {
+      // Stepped to another finding: start it from its top.
+      el?.querySelector?.('.air-ev-body')?.scrollTo?.({ top: 0 })
     }
   }
 
@@ -351,6 +466,7 @@ export class AirEvidenceComponent {
   onClosed(): void {
     this.dialog()?.nativeElement.removeAttribute('open')
     this.evidence.set(null)
+    this.steps.set([])
     this.document.documentElement.style.overflow = ''
   }
 
