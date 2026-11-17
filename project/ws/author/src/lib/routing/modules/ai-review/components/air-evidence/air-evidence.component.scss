@@ -254,9 +254,197 @@
 }
 
 .air-ev-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
   font-weight: 700;
   color: $air-muted;
+}
+
+// The verdict chip's tones, here as in the report (styles do not cross components).
+.air-chip--green {
+  background: #e6f4ea;
+  color: $air-green;
+}
+
+.air-chip--amber {
+  background: #fef6e7;
+  color: $air-amber;
+}
+
+.air-chip--red {
+  background: #fbe9e7;
+  color: $air-danger;
+}
+
+.air-chip--na {
+  background: $air-canvas;
+  color: $air-muted;
+}
+
+// "Please check": not confirmed from the material, so a question for a person, not a fault.
+.air-ev-check {
+  background: #fef6e7;
+  border: 1px solid #f2d9a0;
+
+  .air-ev-label {
+    color: $air-amber;
+  }
+}
+
+.air-ev-check-why {
+  color: $air-amber;
+}
+
+// Withdrawn: only why it was not judged.
+.air-ev-withdrawn {
+  border: 1px dashed $air-border;
+
+  p {
+    color: $air-muted;
+  }
+}
+
+// The judgement of a question's marked answer.
+.air-ev-answer {
+  border: 1px solid $air-line;
+
+  b {
+    font-weight: 600;
+  }
+
+  &--red {
+    background: #fbe9e7;
+    border-color: #f3c4bb;
+
+    .air-ev-label {
+      color: $air-danger;
+    }
+  }
+
+  &--amber {
+    background: #fef6e7;
+    border-color: #f2d9a0;
+
+    .air-ev-label {
+      color: $air-amber;
+    }
+  }
+
+  &--green {
+    background: #f1f9f3;
+    border-color: #b7dfc2;
+
+    .air-ev-label {
+      color: $air-green;
+    }
+  }
+}
+
+.air-ev-source-line {
+  color: $air-muted;
+}
+
+// A question's options: the marked answer, the suggested one, and what is wrong with each.
+.air-ev-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.air-ev-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: $air-surface;
+  border: 1px solid $air-line;
+
+  &--marked {
+    border-color: $air-border-hover;
+  }
+
+  &--flagged {
+    border-color: #f3c4bb;
+  }
+
+  &--suggested {
+    border-color: #8fd0a4;
+    background: #f1f9f3;
+  }
+}
+
+.air-ev-option-label {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  color: $air-text;
+  background: $air-canvas;
+
+  .air-ev-option--marked & {
+    color: #fff;
+    background: $air-text;
+  }
+
+  .air-ev-option--suggested & {
+    color: #fff;
+    background: $air-green;
+  }
+}
+
+.air-ev-option-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.air-ev-option-text {
+  font-size: 15px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.air-ev-option-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.air-ev-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &--marked {
+    color: $air-text;
+    background: $air-canvas;
+  }
+
+  &--suggested {
+    color: $air-green;
+    background: #e6f4ea;
+  }
+}
+
+.air-ev-option-problem {
+  font-size: 13px;
+  line-height: 1.45;
+  color: $air-danger;
 }
 
 .air-ev-note {
@@ -275,6 +463,34 @@
   a {
     text-decoration: none;
   }
+}
+
+// Previous / Next through the resource's findings, at the start of the footer.
+.air-ev-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: auto;
+}
+
+.air-ev-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+}
+
+.air-ev-count {
+  min-width: 56px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: $air-muted;
+  font-variant-numeric: tabular-nums;
 }
 
 // The way to a fresh link when a signed file link has expired.

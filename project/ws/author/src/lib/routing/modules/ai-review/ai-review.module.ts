@@ -4,6 +4,8 @@ import { ConfigurationsService } from '@ws-widget/utils'
 import { RouterModule, Routes } from '@angular/router'
 import { AiReviewNewPageComponent } from './components/ai-review-new-page/ai-review-new-page.component'
 import { AiReviewHistoryPageComponent } from './components/ai-review-history-page/ai-review-history-page.component'
+import { AiReviewReportsPageComponent } from './components/ai-review-reports-page/ai-review-reports-page.component'
+import { AirPageTabsComponent } from './components/air-page-tabs/air-page-tabs.component'
 import { AiReviewCoursePageComponent } from './components/ai-review-course-page/ai-review-course-page.component'
 import { AiReviewReportComponent } from './components/ai-review-report/ai-review-report.component'
 import { AirBusyComponent } from './components/air-busy/air-busy.component'
@@ -15,6 +17,7 @@ import { AirRoleCheckComponent } from './components/air-role-check/air-role-chec
 import { AirSelectComponent } from './components/air-select/air-select.component'
 import { AiReviewService } from './services/ai-review.service'
 import { AIR_VIEWER } from './utils/review-run'
+import { aiReviewAdminGuard } from './utils/admin-guard'
 
 /**
  * The AI review's addresses (see utils/routes.ts):
@@ -25,6 +28,7 @@ import { AIR_VIEWER } from './utils/review-run'
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: AiReviewHistoryPageComponent },
   { path: 'new', component: AiReviewNewPageComponent },
+  { path: 'reports', component: AiReviewReportsPageComponent, canActivate: [aiReviewAdminGuard] },
   { path: 'courses/:courseId', component: AiReviewCoursePageComponent },
   // Earlier addresses.
   { path: 'mine', redirectTo: '', pathMatch: 'full' },
@@ -40,6 +44,8 @@ const routes: Routes = [
   declarations: [
     AiReviewNewPageComponent,
     AiReviewHistoryPageComponent,
+    AiReviewReportsPageComponent,
+    AirPageTabsComponent,
     AiReviewCoursePageComponent,
     AiReviewReportComponent,
     AirBusyComponent,

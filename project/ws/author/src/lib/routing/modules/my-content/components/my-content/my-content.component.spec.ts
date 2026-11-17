@@ -26,6 +26,7 @@ describe('MyContentComponent (my-content module)', () => {
       accessService: {
         userId: 'user-1',
         hasRole: jest.fn().mockReturnValue(false),
+        canUseAiReview: jest.fn().mockReturnValue(true),
         authoringConfig: {
           newDesign: true,
           allowRedo: true,
@@ -553,6 +554,19 @@ describe('MyContentComponent (my-content module)', () => {
       expect(panel).toContain('(opened)="openAiReview(); panelAi.close()"')
       expect(html).not.toContain('class="ai-review-nav')
       expect(html).not.toContain('class="ai-review-link')
+    })
+
+    it('shows the AI Review item only to AI reviewers and AI review admins', () => {
+      const { component, mocks } = build()
+      expect(component.canUseAiReview).toBe(true)
+      mocks.accessService.canUseAiReview.mockReturnValue(false)
+      expect(component.canUseAiReview).toBe(false)
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const fs = require('fs') as typeof import('fs')
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const path = require('path') as typeof import('path')
+      const html = fs.readFileSync(path.join(__dirname, 'my-content.component.html'), 'utf8').replace(/\s+/g, ' ')
+      expect(html).toMatch(/@if \(canUseAiReview\) \{ <mat-expansion-panel #panelAi/)
     })
 
     it('opens Past reviews', () => {

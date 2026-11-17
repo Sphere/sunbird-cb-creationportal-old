@@ -22,7 +22,6 @@ import {
   AiReviewDomainStyle,
   AiReviewLanguage,
   AiReviewReportLanguage,
-  AiReviewLevelMode,
   IAiReview,
   IAiReviewEstimateParts,
   IAiReviewResource,
@@ -69,12 +68,13 @@ export const LANGUAGES: { value: AiReviewLanguage; label: string }[] = [
 
 export const LEVELS = [1, 2, 3, 4, 5]
 
-/** The Level dropdown's choice for judging each part of a self-assessment course at its own level. */
-export const EACH_PART = 'each'
-/** The Level dropdown's choice for judging against every level the course maps. */
-export const COURSE_LEVELS = 'course'
-/** The Competency dropdown's choice for judging against every competency the course maps. */
-export const ALL_MAPPED = '__mapped__'
+/**
+ * Said for a course mapped to more than one competency, or to one at more than one level: AI
+ * review judges one competency at one level (as the service says, ONE_LEVEL_ONLY), so such a
+ * course gets the checklist and alignment reviews only.
+ */
+export const ONE_LEVEL_ONLY =
+  'AI review judges one competency at one level. This course is mapped to more than one, so the domain review is off: the CBP checklist and course alignment reviews still run.'
 
 /** The levels the course maps a competency at (older services send only `level`). */
 const levelsOf = (c: IAiReviewCompetency | null | undefined): number[] => (c ? c.levels || (c.level ? [c.level] : []) : [])
@@ -137,9 +137,8 @@ export class AiReviewCoursePageComponent implements OnInit {
   readonly fracEnabled = AI_REVIEW_FRAC_ENABLED
   readonly domainStyle = signal<AiReviewDomainStyle>('plain')
   readonly competencyId = signal<string | null>(null)
+  /** The one level judged at. */
   readonly level = signal<number | null>(null)
-  readonly levelMode = signal<AiReviewLevelMode>('single')
-  readonly audience = signal('')
   readonly language = signal<AiReviewLanguage>('auto')
   /** The language the review is written in: English for now, whatever the content's language. */
   readonly reportLanguage = signal<AiReviewReportLanguage>('en')
@@ -210,8 +209,28 @@ export class AiReviewCoursePageComponent implements OnInit {
   /** The course's own competencies (the default), and every competency in the dictionary. */
   readonly competencies = computed(() => this.preview()?.competencies || [])
   readonly catalog = computed(() => this.preview()?.competencyCatalog || [])
-  /** Domain review can run with the course's competency, or one picked from the dictionary. */
-  readonly canJudge = computed(() => this.competencies().length > 0 || this.catalog().length > 0)
+  /** Why the domain review is off for a course mapped to several competencies or levels. */
+  readonly oneLevelOnly = ONE_LEVEL_ONLY
+  /** The course's competencies that carry at least one level. */
+  readonly mapped = computed(() => this.competencies().filter(c => levelsOf(c).length))
+  /**
+   * True when the course is mapped to more than one competency, or to one at more than one
+   * level. AI review judges one competency at one level, so such a course gets no domain review
+   * (the checklist and alignment reviews still run), and the page says why.
+   */
+  readonly severalLevels = computed(() => this.mapped().length > 1 || this.mapped().some(c => levelsOf(c).length > 1))
+  /** "Pre, intra and post-op care · Level 3", one line per competency mapped on the course. */
+  readonly mappedSummary = computed(() =>
+    this.mapped().map(c => {
+      const levels = levelsOf(c)
+      return `${c.name || c.competencyId} · ${levels.length > 1 ? 'Levels ' + levels.join(', ') : 'Level ' + levels[0]}`
+    }),
+  )
+  /**
+   * Domain review can run with the course's one competency at its one level, or, for a course
+   * with none, one picked from the dictionary. Never for a course mapped to several.
+   */
+  readonly canJudge = computed(() => !this.severalLevels() && (this.competencies().length > 0 || this.catalog().length > 0))
   readonly selectedCompetency = computed(() => {
     const id = this.competencyId()
     const own = this.competencies().find(c => c.competencyId === id)
@@ -221,87 +240,41 @@ export class AiReviewCoursePageComponent implements OnInit {
     const other = id ? this.catalog().find(c => c.competencyId === id) : null
     return other ? { competencyId: other.competencyId, name: other.name, level: null } : this.competencies()[0] || null
   })
-  /** The course's competencies that carry at least one level: what "all mapped" judges against. */
-  readonly mapped = computed(() => this.competencies().filter(c => levelsOf(c).length))
-  /** "Pre, intra and post-op care · Level 3", one line per competency mapped on the course. */
-  readonly mappedSummary = computed(() =>
-    this.mapped().map(c => {
-      const levels = levelsOf(c)
-      return `${c.name || c.competencyId} · ${levels.length > 1 ? 'Levels ' + levels.join(', ') : 'Level ' + levels[0]}`
-    }),
-  )
-  /** True when every competency the course maps is judged, each at its own levels. */
-  readonly allMapped = computed(() => this.levelMode() === 'courseMapping')
   /** The Competency dropdown's value. */
-  readonly competencyValue = computed(() => (this.allMapped() ? ALL_MAPPED : this.selectedCompetency()?.competencyId || null))
+  readonly competencyValue = computed(() => this.selectedCompetency()?.competencyId || null)
 
-  /**
-   * The line under the Competency field, describing what is selected now: all the course's
-   * competencies, the course's only one, one of several, or one the course does not map.
-   */
+  /** The line under the Competency field: the course's own competency, or one it does not map. */
   readonly competencyHint = computed(() => {
-    const several = this.mapped().length > 1
-    if (this.allMapped()) {
-      const count = this.mapped().length === 2 ? 'Both competencies' : `All ${this.mapped().length} competencies`
-      return `${count} on the course are used, each at the levels it is mapped at. To judge against just one, or a different competency, pick it from the list.`
-    }
     const selected = this.selectedCompetency()
     if (!selected) {
       return ''
     }
     const own = this.competencies().find(c => c.competencyId === selected.competencyId)
     if (!own) {
-      const back = this.competencies().length
-        ? ` To go back, pick ${several ? 'one of the course\'s competencies or "All competencies on the course"' : "the course's competency"}.`
-        : ''
-      return `This competency is not mapped on the course, so pick the level to judge against.${back}`
+      return this.competencies().length
+        ? "This competency is not mapped on the course, so pick the level to judge against. To go back, pick the course's competency."
+        : 'This course has no competency set, so pick one and its level to judge against.'
     }
-    // The level part follows the Level field: all the mapped levels, or the one picked.
     const levels = levelsOf(own)
-    const at =
-      this.levelMode() === 'courseLevels' && levels.length > 1
-        ? ` at its mapped levels (${levels.join(', ')})`
-        : this.level()
-          ? levels.length === 1 && levels[0] === this.level()
-            ? ` at its mapped level (${this.level()})`
-            : ` at Level ${this.level()}`
-          : ''
-    if (!several && this.competencies().length === 1) {
-      return `The course's competency is chosen for you${at}. Pick another to judge against a different one.`
-    }
-    return `Only this course competency is judged${at}. To include the others, pick "All competencies on the course".`
+    const at = this.level()
+      ? levels.length === 1 && levels[0] === this.level()
+        ? ` at its mapped level (${this.level()})`
+        : ` at Level ${this.level()}`
+      : ''
+    return `The course's competency is chosen for you${at}. Pick another to judge against a different one.`
   })
 
-  /**
-   * "All competencies on the course" first when it maps more than one, then the course's
-   * competencies, marked as such, then the rest of the dictionary.
-   */
+  /** The course's competencies, marked as such, then the rest of the dictionary. */
   readonly competencyOptions = computed<AirSelectOption[]>(() => {
     const own = this.competencies()
     const ownIds = new Set(own.map(c => c.competencyId))
-    const all: AirSelectOption[] =
-      this.mapped().length > 1
-        ? [
-            {
-              value: ALL_MAPPED,
-              label: 'All competencies on the course',
-              hint: `${this.mapped().length} competencies, each at its mapped levels`,
-            },
-          ]
-        : []
     return [
-      ...all,
       ...own.map(c => {
         const levels = levelsOf(c)
         return {
           value: c.competencyId,
           label: c.name || c.competencyId,
-          hint:
-            levels.length > 1
-              ? `On this course · Levels ${levels.join(', ')}`
-              : levels.length
-                ? `On this course · Level ${levels[0]}`
-                : 'On this course · no level mapped',
+          hint: levels.length ? `On this course · Level ${levels[0]}` : 'On this course · no level mapped',
         }
       }),
       ...this.catalog()
@@ -309,53 +282,20 @@ export class AiReviewCoursePageComponent implements OnInit {
         .map(c => ({ value: c.competencyId, label: c.name, hint: c.levels.length ? `${c.levels.length} levels` : undefined })),
     ]
   })
-  /** The levels the parts of a self-assessment course carry, in order ([] for any other course). */
-  readonly partLevels = computed(() =>
-    [
-      ...new Set(
-        this.reviewable()
-          .map(r => r.level)
-          .filter((l): l is number => typeof l === 'number'),
-      ),
-    ].sort((a, b) => a - b),
-  )
-  /**
-   * The selected competency's own levels with their names (1-5 when they are not known). A
-   * self-assessment course also offers judging each part at its own level, and starts there.
-   */
+  /** The selected competency's own levels with their names (1-5 when they are not known). One is judged. */
   readonly levelOptions = computed<AirSelectOption[]>(() => {
     const id = this.selectedCompetency()?.competencyId
     const levels = this.catalog().find(c => c.competencyId === id)?.levels || []
-    const each: AirSelectOption[] = this.partLevels().length
-      ? [{ value: EACH_PART, label: 'Each part at its own level', hint: `Levels ${this.partLevels().join(', ')}, from the part names` }]
-      : []
-    const own = this.competencies().find(c => c.competencyId === id)
-    const courseLevels = levelsOf(own)
-    const all: AirSelectOption[] =
-      courseLevels.length > 1
-        ? [{ value: COURSE_LEVELS, label: 'All course levels', hint: `Levels ${courseLevels.join(', ')}, together` }]
-        : []
-    return [
-      ...each,
-      ...all,
-      ...(levels.length
-        ? levels.map(l => ({ value: String(l.level), label: `Level ${l.level}`, hint: l.label || undefined }))
-        : LEVELS.map(l => ({ value: String(l), label: `Level ${l}` }))),
-    ]
+    return levels.length
+      ? levels.map(l => ({ value: String(l.level), label: `Level ${l.level}`, hint: l.label || undefined }))
+      : LEVELS.map(l => ({ value: String(l), label: `Level ${l}` }))
   })
-  /** Parts with no "Level N" of their own, in 'each part at its own level' mode. */
-  readonly unlevelledParts = computed(() =>
-    this.levelMode() === 'perResource' ? this.reviewable().filter(r => typeof r.level !== 'number') : [],
-  )
+  /** The Level dropdown's value. */
+  readonly levelValue = computed(() => (this.level() ? String(this.level()) : null))
   /** True when the level shown is one of the choices (a course level the dictionary lacks is not). */
   readonly levelKnown = computed(() => {
     const v = this.levelValue()
     return !!v && this.levelOptions().some(o => o.value === v)
-  })
-  /** The Level dropdown's value. */
-  readonly levelValue = computed(() => {
-    const mode = this.levelMode()
-    return mode === 'perResource' ? EACH_PART : mode === 'courseLevels' ? COURSE_LEVELS : this.level() ? String(this.level()) : null
   })
   /** "Watch videos in full" only matters when there is a video to watch. */
   readonly hasVideos = computed(() => this.selected().some(r => this.kindOf(r) === 'video'))
@@ -399,13 +339,10 @@ export class AiReviewCoursePageComponent implements OnInit {
   }))
 
   /**
-   * A resource's cost parts: at its measured size once known, else at the size the service
-   * assumed. A part with no level of its own and no fallback level gets no domain review.
+   * A resource's cost parts: at its measured size once known, else at the size the service assumed.
    */
   private partsOf(r: IAiReviewResource): IAiReviewEstimateParts | null {
-    const p = this.sizes().get(r.contentId)?.estimate || r.estimate
-    const noDomain = this.levelMode() === 'perResource' && !this.level() && typeof r.level !== 'number'
-    return p ? (noDomain ? { ...p, domain: 0 } : p) : null
+    return this.sizes().get(r.contentId)?.estimate || r.estimate || null
   }
 
   /** One resource's estimated cost with the reviews switched on now; 0 when its earlier result is reused; null when unknown. */
@@ -480,13 +417,13 @@ export class AiReviewCoursePageComponent implements OnInit {
     if (this.alignment() && !this.canAlign()) {
       return this.briefProblem()
     }
-    if (!this.audience().trim()) {
-      return 'Pick the audience: who the content is for (a position from the list, or type your own).'
+    if (this.domain() && this.severalLevels()) {
+      return ONE_LEVEL_ONLY
     }
-    if (this.domain() && !this.allMapped() && !this.selectedCompetency()) {
+    if (this.domain() && !this.selectedCompetency()) {
       return 'This course has no competency set. Pick one to judge against, or untick Domain review.'
     }
-    if (this.domain() && this.levelMode() === 'single' && !this.level()) {
+    if (this.domain() && !this.level()) {
       return 'The domain review needs a level. Pick one, or untick Domain review.'
     }
     if (!this.reviewable().length) {
@@ -516,14 +453,6 @@ export class AiReviewCoursePageComponent implements OnInit {
   /** Where the user is: setting up, watching a review run, or reading its report. */
   readonly currentStep = computed<AiReviewStep>(() => (this.isFinished() ? 'report' : this.isRunning() ? 'review' : 'setup'))
   readonly currentStepIndex = computed(() => STEPS.findIndex(s => s.id === this.currentStep()))
-
-  /** The cadre the expert judges the content for: the audience, or the default when it is empty. */
-  readonly judgedFor = computed(() => this.audience().trim() || 'the audience you pick above')
-  /** The FRAC position the audience names, when it is one from the list (its code links its activities). */
-  readonly position = computed(() => {
-    const name = this.audience().trim().toLowerCase()
-    return (name && (this.preview()?.positionList || []).find(p => p.name.trim().toLowerCase() === name && p.code)) || null
-  })
 
   constructor() {
     // When a step replaces the section the user acted in (Start, Cancel, Review again),
@@ -616,10 +545,18 @@ export class AiReviewCoursePageComponent implements OnInit {
     }
   }
 
+  /**
+   * Opened with no review named: the course's current report is shown once its past reviews are
+   * read (one report per course), instead of the setup form. A review still running takes its
+   * place (the preview follows it); "Review again" goes to the form as before.
+   */
+  private openCurrentReport = false
+
   ngOnInit(): void {
     this.watchConnection()
     this.courseId = this.route.snapshot.paramMap.get('courseId') || ''
     const requested = this.route.snapshot.queryParamMap.get('review')
+    this.openCurrentReport = !requested
     this.loadPreview(requested)
     this.loadHistory()
   }
@@ -627,7 +564,9 @@ export class AiReviewCoursePageComponent implements OnInit {
   /** Retries a failed course read. */
   reload(): void {
     this.previewError.set('')
-    this.loadPreview(this.route.snapshot.queryParamMap.get('review'))
+    const requested = this.route.snapshot.queryParamMap.get('review')
+    this.openCurrentReport = !requested && !this.followedId
+    this.loadPreview(requested)
     this.loadHistory()
   }
 
@@ -702,21 +641,14 @@ export class AiReviewCoursePageComponent implements OnInit {
   }
 
   private applyDefaults(preview: IAiReviewPreview): void {
-    // The first competency the course maps at a level; a listed one with no level is a last resort.
-    const first = preview.competencies.find(c => levelsOf(c).length) || preview.competencies[0] || null
-    this.domain.set(!!first)
-    this.competencyId.set(first ? first.competencyId : null)
-    this.level.set(first ? first.level : null)
-    // Each part of a self-assessment course is one level of its competency: judge it there.
-    // A course mapped at several levels is judged against all of them together.
-    const levelled = !!preview.course.selfAssessment && preview.resources.some(r => r.reviewable && typeof r.level === 'number')
-    // A course that maps several competencies is judged against all of them, each at its levels.
-    const mappedCount = preview.competencies.filter(c => levelsOf(c).length).length
-    this.levelMode.set(
-      levelled ? 'perResource' : mappedCount > 1 ? 'courseMapping' : levelsOf(first).length > 1 ? 'courseLevels' : 'single',
-    )
-    // The audience is left for the reviewer to pick: a guessed default would judge the
-    // content for the wrong learners without anyone choosing it.
+    // The course's one competency at its one level. A course mapped to several gets no domain
+    // review (AI review judges one competency at one level): the checklist still runs.
+    const mapped = preview.competencies.filter(c => levelsOf(c).length)
+    const several = mapped.length > 1 || mapped.some(c => levelsOf(c).length > 1)
+    const first = mapped[0] || preview.competencies[0] || null
+    this.domain.set(!!first && !several)
+    this.competencyId.set(first && !several ? first.competencyId : null)
+    this.level.set(first && !several ? first.level : null)
     this.language.set(preview.defaults.language)
     this.domainStyle.set(AI_REVIEW_FRAC_ENABLED ? preview.defaults.domainStyle : 'plain')
   }
@@ -731,8 +663,17 @@ export class AiReviewCoursePageComponent implements OnInit {
           this.history.set(list)
           this.historyError.set('')
           this.loadingHistory.set(false)
+          // The course already has a report: show it, unless another review is already on screen.
+          if (this.openCurrentReport) {
+            this.openCurrentReport = false
+            const current = list.find(h => h.status === 'done' || h.status === 'partial')
+            if (current && !this.followedId) {
+              this.follow(current.id)
+            }
+          }
         },
         error: err => {
+          this.openCurrentReport = false
           this.historyError.set(AiReviewService.errorMessage(err, 'Could not load past reviews.'))
           this.loadingHistory.set(false)
         },
@@ -741,35 +682,14 @@ export class AiReviewCoursePageComponent implements OnInit {
 
   /** The course's level for its own competency; for another one, the reviewer picks the level. */
   selectCompetency(competencyId: string): void {
-    if (competencyId === ALL_MAPPED) {
-      this.levelMode.set('courseMapping')
-      this.level.set(null)
-      return
-    }
-    if (this.levelMode() === 'courseMapping') {
-      this.levelMode.set('single')
-    }
     this.competencyId.set(competencyId)
     const chosen = this.competencies().find(c => c.competencyId === competencyId)
     this.level.set(chosen ? chosen.level : null)
-    if (this.levelMode() !== 'perResource') {
-      this.levelMode.set(levelsOf(chosen).length > 1 ? 'courseLevels' : 'single')
-    }
   }
 
+  /** The one level judged at. */
   setLevel(value: string): void {
-    if (value === EACH_PART) {
-      // The level already chosen stays, for parts with no level of their own (shown below).
-      this.levelMode.set('perResource')
-      return
-    }
-    if (value === COURSE_LEVELS) {
-      this.levelMode.set('courseLevels')
-      this.level.set(null)
-      return
-    }
     const n = Number(value)
-    this.levelMode.set('single')
     this.level.set(Number.isInteger(n) && n > 0 ? n : null)
   }
 
@@ -781,11 +701,13 @@ export class AiReviewCoursePageComponent implements OnInit {
       alignment: this.alignment(),
       watch: this.watch(),
       domainStyle: this.domainStyle(),
-      competencyId: domain && !this.allMapped() ? this.selectedCompetency()?.competencyId || null : null,
-      level: domain && this.levelMode() !== 'courseLevels' && !this.allMapped() ? this.level() : null,
-      levelMode: domain ? this.levelMode() : 'single',
-      positionCode: this.position()?.code || null,
-      audience: this.audience().trim(),
+      // One competency at one level.
+      competencyId: domain ? this.selectedCompetency()?.competencyId || null : null,
+      level: domain ? this.level() : null,
+      levelMode: 'single',
+      positionCode: null,
+      // No audience is chosen: the service judges for the health workers the level is meant for.
+      audience: '',
       language: this.language(),
       reportLanguage: this.reportLanguage(),
       context: this.context().trim(),
@@ -914,7 +836,8 @@ export class AiReviewCoursePageComponent implements OnInit {
    */
   poll(reviewId: string): Observable<IAiReview> {
     return watchReview(
-      () => this.api.get(reviewId),
+      // One report per course: a replaced review opens the one that replaced it.
+      () => this.api.get(reviewId).pipe(switchMap(r => (r.supersededBy ? this.api.get(r.supersededBy) : of(r)))),
       this.document,
       () => this.online(),
     )
@@ -939,7 +862,7 @@ export class AiReviewCoursePageComponent implements OnInit {
       this.alignment.set(!!o.alignment && this.canAlign())
       // Videos are always watched in full now, even when the earlier review had it off.
       this.watch.set(true)
-      // The resources it left out stay left out (the position follows from the audience).
+      // The resources it left out stay left out.
       const reviewed = new Set((this.review()?.items || []).map(i => i.contentId))
       if (reviewed.size) {
         this.excluded.set(
@@ -953,10 +876,11 @@ export class AiReviewCoursePageComponent implements OnInit {
       if (o.domainStyle) {
         this.domainStyle.set(AI_REVIEW_FRAC_ENABLED ? o.domainStyle : 'plain')
       }
-      this.levelMode.set(o.levelMode || 'single')
-      this.competencyId.set(o.competencyId ?? this.competencyId())
-      this.level.set(o.level ?? null)
-      this.audience.set(o.audience ?? this.audience())
+      // An older review judged several levels at once: Review again keeps the course's defaults.
+      if ((o.levelMode || 'single') === 'single') {
+        this.competencyId.set(o.competencyId ?? this.competencyId())
+        this.level.set(o.level ?? this.level())
+      }
       if (o.language) {
         this.language.set(o.language)
       }

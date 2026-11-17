@@ -459,15 +459,15 @@ export class AppTocBannerComponent implements OnInit, OnChanges, OnDestroy {
     this.tocSvc.changeMessage('comments')
   }
   /**
-   * AI review is offered on a course only to its creator and the reviewers and publishers
-   * added to it. The service makes the same check against the course.
+   * AI review is offered on a course only to users with the AI_REVIEWER role who are its creator
+   * or one of the reviewers and publishers added to it. The service checks the membership too.
    */
   get canAiReview(): boolean {
     return (
       !!this.content &&
       this.content.contentType === NsContent.EContentTypes.COURSE &&
       // The widget content type does not declare the authoring fields; the TOC read carries them.
-      this.authAccessService.isCourseMember(this.content as { createdBy?: string; reviewerIDs?: string[]; publisherIDs?: string[] })
+      this.authAccessService.canAiReviewCourse(this.content as { createdBy?: string; reviewerIDs?: string[]; publisherIDs?: string[] })
     )
   }
 

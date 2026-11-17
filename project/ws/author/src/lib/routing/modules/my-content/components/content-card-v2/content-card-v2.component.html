@@ -22,6 +22,8 @@
       <span [matTooltip]="category" wsAuthShowHideToolTip class="w-2/4 overflow-prevent">{{ category }}</span>
       <ws-auth-status-display class="overflow-prevent flex w-2/4 justify-end" [status]="content.status"> </ws-auth-status-display>
     </div>
+    <!-- A course with an AI review report: opens the report. -->
+    <ws-auth-ai-reviewed-mark class="ai-mark-row" [courseId]="content.identifier" [contentType]="content.contentType" />
     <div class="pt-2" *ngIf="content.lastUpdatedOn">
       <ws-auth-last-update-display
         [perspective]="timeLinePerspective"

@@ -169,7 +169,7 @@ describe('report summary', () => {
       'CBP checklist: 98% — 80 of the 82 checks that apply are met (Meets the CBP standard — ship it).',
       'Competency level: 1 of 3 parts fully taught, 1 partly, 1 missing.',
       '5 things to fix, listed under each resource below.',
-      '2 findings are marked Borderline: the reviewer was not sure, or could not prove them from the material. Check them by hand before acting.',
+      '2 findings are marked Please check: the review was not sure, or could not confirm them from the material. Check them by hand before acting.',
     ])
     expect(inShortOf({ ...review(), result: null }, { one: 'file', many: 'files' }, 0)).toEqual([])
   })
@@ -223,7 +223,7 @@ describe('the Excel workbook', () => {
     const fix = values('To fix')
     // 3 for do_a (no sound, C2, D3) + 2 for do_b; no coverage rows.
     expect(fix.length - 1).toBe(5)
-    expect(fix.some(r => r.includes('Cuff placement (borderline)'))).toBe(true)
+    expect(fix.some(r => r.includes('Cuff placement (please check)'))).toBe(true)
     expect(fix.some(r => r.includes('EDD|missing'))).toBe(false)
 
     const summary = values('Summary')
@@ -244,10 +244,10 @@ describe('findings to check by hand', () => {
     expect(borderlineCountOf(r)).toBe(2)
     const lines = inShortOf(r, { one: 'resource', many: 'resources' }, 5)
     expect(lines.at(-1)).toBe(
-      '2 findings are marked Borderline: the reviewer was not sure, or could not prove them from the material. Check them by hand before acting.',
+      '2 findings are marked Please check: the review was not sure, or could not confirm them from the material. Check them by hand before acting.',
     )
     const clean = { ...r, items: [] }
-    expect(inShortOf(clean, { one: 'resource', many: 'resources' }, 0).some(l => l.includes('Borderline'))).toBe(false)
+    expect(inShortOf(clean, { one: 'resource', many: 'resources' }, 0).some(l => l.includes('Please check'))).toBe(false)
   })
 })
 

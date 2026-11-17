@@ -204,8 +204,8 @@ export class AiReviewNewPageComponent implements OnInit {
   readonly fracEnabled = AI_REVIEW_FRAC_ENABLED
   readonly domainStyle = signal<AiReviewDomainStyle>('plain')
   readonly competencyId = signal<string | null>(null)
+  /** The one level judged at: AI review judges one competency at one level. */
   readonly level = signal<number | null>(null)
-  readonly audience = signal('')
   readonly language = signal<AiReviewLanguage>('auto')
   /** The language the review is written in: English for now, whatever the content's language. */
   readonly reportLanguage = signal<AiReviewReportLanguage>('en')
@@ -287,12 +287,8 @@ export class AiReviewNewPageComponent implements OnInit {
     const level = this.level()
     return (level && this.selectedCompetency()?.levels.find(l => l.level === level)?.label) || ''
   })
-  readonly positionNames = computed(() => (this.context()?.positionList || []).map(p => p.name))
-  readonly position = computed(() => {
-    const name = this.audience().trim().toLowerCase()
-    return (name && (this.context()?.positionList || []).find(p => p.name.trim().toLowerCase() === name && p.code)) || null
-  })
-  readonly judgedFor = computed(() => this.audience().trim() || 'the audience you pick above')
+  /** The Level dropdown's value. */
+  readonly levelValue = computed(() => (this.level() ? String(this.level()) : null))
 
   /** The title used when the user gives none: the file's name, or the first and a count. */
   readonly defaultTitle = computed(() => {
@@ -337,9 +333,6 @@ export class AiReviewNewPageComponent implements OnInit {
   private readonly settingsMessage = computed(() => {
     if (!this.addie() && !this.domain() && !this.alignment()) {
       return 'Pick at least one review: the ADDIE checklist, the domain review or the course alignment check.'
-    }
-    if (!this.audience().trim()) {
-      return 'Pick the audience: who the content is for (a position from the list, or type your own).'
     }
     if (this.alignment() && !this.briefName().trim()) {
       return 'Enter the name of the course these files are for, or untick Course alignment.'
@@ -1003,8 +996,9 @@ export class AiReviewNewPageComponent implements OnInit {
       competencyId: domain ? this.competencyId() : null,
       level: domain ? this.level() : null,
       levelMode: 'single',
-      positionCode: this.position()?.code || null,
-      audience: this.audience().trim(),
+      positionCode: null,
+      // No audience is chosen: the service judges for the health workers the level is meant for.
+      audience: '',
       language: this.language(),
       reportLanguage: this.reportLanguage(),
       context: this.notes().trim(),
@@ -1129,7 +1123,6 @@ export class AiReviewNewPageComponent implements OnInit {
         this.competencyId.set(o.competencyId)
       }
       this.level.set(o.level ?? this.level())
-      this.audience.set(o.audience ?? this.audience())
       if (o.language) {
         this.language.set(o.language)
       }

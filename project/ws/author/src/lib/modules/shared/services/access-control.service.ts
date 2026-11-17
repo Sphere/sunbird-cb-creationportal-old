@@ -14,6 +14,11 @@ import { ConfigurationsService, NsInstanceConfig } from '@ws-widget/utils'
 
 import { NSContent } from '@ws/author/src/lib/interface/content'
 
+/** The Sunbird role that opens AI review (assigned as AI_REVIEWER; the portal lower-cases roles). */
+export const AI_REVIEWER_ROLE = 'ai_reviewer'
+/** AI review's admin (assigned as AI_REVIEW_ADMIN): any course, every review, and the spend report. */
+export const AI_REVIEW_ADMIN_ROLE = 'ai_review_admin'
+
 @Injectable({ providedIn: 'root' })
 export class AccessControlService {
   downloadRegex = new RegExp(`(https://.*?/content-store/.*?)(\\\)?\\\\?['"])`, 'gm')
@@ -159,6 +164,31 @@ export class AccessControlService {
     }
     const listed = (ids: unknown) => Array.isArray(ids) && ids.includes(userId)
     return meta.createdBy === userId || listed(meta.reviewerIDs) || listed(meta.publisherIDs)
+  }
+  /** Whether the user holds the AI_REVIEWER role (roles arrive lower-cased). */
+  hasAiReviewerRole(): boolean {
+    return this.hasRole([AI_REVIEWER_ROLE])
+  }
+
+  /** Whether the user is an AI review admin (AI_REVIEW_ADMIN). */
+  hasAiReviewAdminRole(): boolean {
+    return this.hasRole([AI_REVIEW_ADMIN_ROLE])
+  }
+
+  /** Whether the user may use AI review at all: an AI reviewer or an AI review admin. */
+  canUseAiReview(): boolean {
+    return this.hasAiReviewerRole() || this.hasAiReviewAdminRole()
+  }
+
+  /**
+   * Whether the user may run and read AI reviews of this course: an AI review admin may for any
+   * course; an AI reviewer for the courses they created or are a reviewer or publisher of.
+   */
+  canAiReviewCourse(meta: Partial<Pick<NSContent.IContentMeta, 'createdBy' | 'reviewerIDs' | 'publisherIDs'>> | null | undefined): boolean {
+    if (!meta) {
+      return false
+    }
+    return this.hasAiReviewAdminRole() || (this.hasAiReviewerRole() && this.isCourseMember(meta))
   }
 
   hasAccess(meta: NSContent.IContentMeta, forPreview = false, parentMeta?: NSContent.IContentMeta): boolean {

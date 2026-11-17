@@ -5,6 +5,7 @@ import { buildWorkbookSheets, judgedAgainst, levelText, mediaNotes, reportWords,
 import { kindLine, kindMeta } from './resource-kind'
 import { costBreakdown, providerLabel, stepLabel } from './usage'
 import { checklistTotalOf, fixGroupsOf, inShortOf, scoreNote, scoreRowsOf } from './report-summary'
+import { indicatorNote, indicatorVerdict } from './issues'
 
 /**
  * The review as a formatted Excel workbook, for reviewers who track fixes in a spreadsheet:
@@ -204,7 +205,7 @@ export async function buildExcelWorkbook(
           x.item.name,
           g.label,
           x.id,
-          x.what + (x.borderline ? ' (borderline)' : ''),
+          x.what + (x.borderline ? ' (please check)' : ''),
           x.verdict,
           finding,
           x.fix,
@@ -288,9 +289,9 @@ export async function buildExcelWorkbook(
           area.area,
           i.id,
           i.text,
-          VERDICT[i.verdict] || i.verdict,
-          i.note,
-          i.fix || '',
+          indicatorVerdict(i, VERDICT),
+          indicatorNote(i),
+          i.withdrawn ? '' : i.fix || '',
           placeLabel(placeOf(i)),
           '',
         ])
@@ -338,9 +339,9 @@ export async function buildExcelWorkbook(
           'Indicator',
           i.id,
           i.text,
-          VERDICT[i.verdict] || i.verdict,
-          i.note,
-          i.fix || '',
+          indicatorVerdict(i, VERDICT),
+          indicatorNote(i),
+          i.withdrawn ? '' : i.fix || '',
           placeLabel(placeOf(i)),
           '',
         ])

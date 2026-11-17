@@ -26,6 +26,10 @@ export class AirComboboxComponent {
   /** Id of the visible label, so the field is announced with it. */
   readonly labelledBy = input<string | null>(null)
   readonly valueChange = output<string>()
+  /** A suggestion was picked from the list (it is also sent through valueChange). */
+  readonly picked = output<string>()
+  /** Enter was pressed on typed text, with no suggestion highlighted: the text is to be used as it is. */
+  readonly committed = output<string>()
 
   readonly id = `air-combobox-${++nextId}`
   readonly open = signal(false)
@@ -70,6 +74,7 @@ export class AirComboboxComponent {
     const choice = this.visible()[index]
     if (choice !== undefined) {
       this.valueChange.emit(choice)
+      this.picked.emit(choice)
     }
     this.open.set(false)
   }
@@ -97,6 +102,10 @@ export class AirComboboxComponent {
         if (this.open() && this.active() >= 0) {
           event.preventDefault()
           this.pick(this.active())
+        } else if (this.value().trim()) {
+          event.preventDefault()
+          this.open.set(false)
+          this.committed.emit(this.value().trim())
         }
         return
       case 'Escape':

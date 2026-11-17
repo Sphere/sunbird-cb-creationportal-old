@@ -25,6 +25,10 @@ export const AIR_ICONS = {
   // AI Studio's listCheck.
   checklist: 'M11 6h10M11 12h10M11 18h10M3 6l1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17',
   chevronDown: 'M6 9l6 6 6-6',
+  // AI Studio's chevronLeft, chevronRight and users.
+  chevronLeft: 'M15 18l-6-6 6-6',
+  chevronRight: 'M9 18l6-6-6-6',
+  users: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75',
   close: 'M18 6L6 18M6 6l12 12',
   code: 'M16 18l6-6-6-6M8 6l-6 6 6 6',
   // AI Studio's document.

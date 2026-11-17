@@ -156,8 +156,14 @@ export interface IAiReviewOptions {
   level: number | null
   /** 'perResource': each part of a self-assessment course at its own level. */
   levelMode?: AiReviewLevelMode
+  /** Several levels of the competency picked together (two or more): judged as one range. */
+  selectedLevels?: number[]
   /** The FRAC position the audience was picked as: the FRAC style checks its activities. */
   positionCode?: string | null
+  /** Several audiences picked: every FRAC position among them, by code. */
+  positionCodes?: string[]
+  /** Every audience picked, in order; `audience` is them joined. */
+  audiences?: string[]
   audience: string
   language: AiReviewLanguage
   /** The language the review is written in (absent on older reviews: English). */
@@ -213,6 +219,11 @@ export interface IAiReviewScoredItem {
   atSec?: number
   /** PDFs: the page to open the document at. */
   page?: number
+  /**
+   * The service withdrew this finding because the material did not support it (the verdict is
+   * then "na"): shown as "Not judged" with this reason, never the claim itself.
+   */
+  withdrawn?: string
 }
 
 export interface IAiReviewAreaScore {
@@ -277,6 +288,33 @@ export interface IAiReviewQuestionFinding {
   check?: string
   /** What the question asks of the learner: to recall a fact, or to apply it. */
   demand?: 'recall' | 'apply'
+  /** The question's options as the quiz has them, with the marked answer (newer reviews). */
+  options?: IAiReviewQuestionOption[]
+  /**
+   * The reviewer's judgement of the marked answer: "wrong" only with the option that should be
+   * marked and a named guideline, after a second reviewer agreed; "check" when not certain.
+   */
+  answer?: IAiReviewAnswerJudgement
+  /** Problems with particular options, by letter. */
+  optionIssues?: { option: string; problem: string }[]
+}
+
+export interface IAiReviewQuestionOption {
+  /** "A", "B"… in the quiz's order. */
+  label: string
+  text: string
+  /** Marked correct in the answer key. */
+  marked: boolean
+}
+
+export interface IAiReviewAnswerJudgement {
+  verdict: 'correct' | 'wrong' | 'check'
+  /** The option letter(s) that should be marked, only with "wrong". */
+  suggested?: string
+  /** Why; for "check", what to verify. */
+  why: string
+  /** The guideline it rests on. */
+  source?: string
 }
 
 /** What an interactive HTML package holds, as the reviewer found it. */
@@ -441,6 +479,11 @@ export interface IAiReview {
   estimateUsd: number | string | null
   createdAt: string
   finishedAt: string | null
+  /**
+   * Replaced by a newer review of the course (one report per course): this one's report is
+   * gone, and the newer one is opened in its place.
+   */
+  supersededBy?: string | null
 }
 
 export interface IAiReviewHistoryEntry {
@@ -568,4 +611,52 @@ export interface IAiReviewUsageLine {
   cachedTokens: number
   audioSec: number
   costUsd: number
+}
+
+// ---- AI review admin's report (AI_REVIEW_ADMIN) ------------------------------------------------
+
+/** The admin report's filters; every one is optional. Dates are YYYY-MM-DD, both inclusive. */
+export interface IAiReviewAdminFilter {
+  from?: string
+  to?: string
+  userId?: string
+  source?: AiReviewSource
+  status?: AiReviewStatus
+  q?: string
+}
+
+/** One review in the admin's list: who ran it, how it came out, and what it cost. */
+export interface IAiReviewAdminRow {
+  id: string
+  source: AiReviewSource
+  courseId: string | null
+  /** The course's name, or a file review's title. */
+  name: string
+  requestedBy: { id: string; name: string }
+  status: AiReviewStatus
+  progress: { done: number; total: number }
+  costUsd: number
+  estimateUsd: number
+  scorePct: number | null
+  /** The course verdict (from the checklist and domain review together), when there is one. */
+  verdict: { band?: string; message?: string } | null
+  competency: { label?: string; code?: string } | null
+  createdAt: string
+  finishedAt: string | null
+}
+
+export interface IAiReviewAdminPage {
+  reviews: IAiReviewAdminRow[]
+  page: { total: number; limit: number; offset: number }
+  /** What every matching review cost, not only this page. */
+  costUsd: number
+}
+
+export interface IAiReviewAdminSummary {
+  totals: { reviews: number; costUsd: number; people: number; courses: number; files: number }
+  byPerson: { userId: string; name: string; reviews: number; costUsd: number; lastAt: string }[]
+  byCourse: { courseId: string; name: string; reviews: number; costUsd: number; lastAt: string }[]
+  byDay: { day: string; reviews: number; costUsd: number }[]
+  /** This calendar month's spend (all reviews) against the monthly budget. */
+  month: { spentUsd: number; budgetUsd: number }
 }

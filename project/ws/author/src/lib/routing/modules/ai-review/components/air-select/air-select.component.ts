@@ -34,9 +34,20 @@ export class AirSelectComponent {
   /** Id of the visible label, so the combobox is announced with it. */
   readonly labelledBy = input<string | null>(null)
   readonly invalid = input(false)
+  /** A filter that is set (not its "all" choice): marked, so it is plain what is filtering. */
+  readonly filtering = input(false)
   readonly searchable = input(false)
   readonly searchPlaceholder = input('Type to search')
   readonly valueChange = output<string>()
+  /**
+   * Several choices at once: `values` holds them, choosing an option toggles it and the list stays
+   * open, and `valuesChange` reports the new set. An `exclusive` option ("All mapped levels")
+   * stands alone: choosing it clears the rest, and choosing any other clears it.
+   */
+  readonly multiple = input(false)
+  readonly values = input<string[]>([])
+  readonly exclusive = input<string[]>([])
+  readonly valuesChange = output<string[]>()
 
   readonly id = `air-select-${++nextId}`
   readonly open = signal(false)
@@ -44,6 +55,26 @@ export class AirSelectComponent {
   readonly query = signal('')
 
   readonly selected = computed(() => this.options().find(o => o.value === this.value()) || null)
+  /** What the closed button shows: the one choice, or every choice in a multiple select. */
+  readonly display = computed(() => {
+    if (!this.multiple()) {
+      return this.selected()?.label || ''
+    }
+    const picked = this.values()
+    return this.options()
+      .filter(o => picked.includes(o.value))
+      .map(o => o.label)
+      .join(', ')
+  })
+
+  isSelected(option: AirSelectOption): boolean {
+    return this.multiple() ? this.values().includes(option.value) : option.value === this.value()
+  }
+
+  /** In a multiple select, an option that is chosen alongside others (not an exclusive one). */
+  isCheckable(option: AirSelectOption): boolean {
+    return this.multiple() && !this.exclusive().includes(option.value)
+  }
   /** The options shown: all of them, or those matching the search. */
   readonly visible = computed(() => {
     const q = this.query().trim().toLowerCase()
@@ -64,11 +95,13 @@ export class AirSelectComponent {
 
   openList(seed = ''): void {
     this.query.set(seed)
-    const i = this.visible().findIndex(o => o.value === this.value())
+    const i = this.visible().findIndex(o => this.isSelected(o))
     this.active.set(i >= 0 ? i : 0)
     this.open.set(true)
     if (this.searchable()) {
-      setTimeout(() => ((this.host.nativeElement as HTMLElement).querySelector?.('.air-select-search input') as HTMLInputElement | null)?.focus())
+      setTimeout(() =>
+        ((this.host.nativeElement as HTMLElement).querySelector?.('.air-select-search input') as HTMLInputElement | null)?.focus(),
+      )
     }
   }
 
@@ -83,10 +116,30 @@ export class AirSelectComponent {
 
   choose(index: number): void {
     const option = this.visible()[index]
+    if (this.multiple()) {
+      if (option) {
+        this.valuesChange.emit(this.toggled(option.value))
+      }
+      // An exclusive choice is a whole answer; individual ones are picked several at a time.
+      if (!option || this.exclusive().includes(option.value)) {
+        this.close()
+      }
+      return
+    }
     if (option) {
       this.valueChange.emit(option.value)
     }
     this.close()
+  }
+
+  /** The set after choosing `value`: an exclusive one alone, else the others toggled without the exclusive ones. */
+  private toggled(value: string): string[] {
+    const exclusive = this.exclusive()
+    if (exclusive.includes(value)) {
+      return [value]
+    }
+    const rest = this.values().filter(v => !exclusive.includes(v))
+    return rest.includes(value) ? rest.filter(v => v !== value) : [...rest, value]
   }
 
   onKeydown(event: KeyboardEvent): void {

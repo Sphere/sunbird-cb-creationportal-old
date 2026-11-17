@@ -243,6 +243,9 @@ describe('report export', () => {
       }),
     ]
     expect(buildReportHtml(r)).toContain('<span class="check">Check by hand: It quotes words that are not in the transcript.</span>')
+    // Labelled as a question to check, not as a fault.
+    expect(buildReportHtml(r)).toContain('<span class="chip amber">Please check</span>')
+    expect(buildReportHtml(r)).not.toContain('Borderline')
   })
 
   it('says which level the content really fits, as FRAC judged it', () => {

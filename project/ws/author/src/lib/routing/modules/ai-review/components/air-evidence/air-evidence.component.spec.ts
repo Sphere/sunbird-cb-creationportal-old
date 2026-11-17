@@ -337,6 +337,174 @@ describe('AirEvidenceComponent', () => {
       expect(el().querySelector('a[target="_blank"]')).toBeNull()
     })
 
+    describe('a question with its options and the judgement of its answer', () => {
+      const options = [
+        { label: 'A', text: 'Blood sugar test', marked: false },
+        { label: 'B', text: 'Chest X-ray', marked: true },
+        { label: 'C', text: 'Urine test', marked: false },
+        { label: 'D', text: 'Pulse oximetry', marked: false },
+      ]
+      const q7 = (answer: object, over: object = {}) => ({
+        n: 7,
+        question: 'What is the most critical test for a child with severe respiratory distress?',
+        verdict: 'issue' as const,
+        issues: ['The stem is vague.'],
+        fix: 'Make D the marked answer and reword the stem for a newborn.',
+        options,
+        answer,
+        optionIssues: [{ option: 'C', problem: 'A urine test plays no part in triage.' }],
+        ...over,
+      })
+      const open = (q: ReturnType<typeof q7>, over: Partial<AirEvidence> = {}) => {
+        component.open(
+          evidence({
+            item: item({ kind: 'quiz', mimeType: 'application/json', artifactUrl: null, result: { questions: [q] } as never }),
+            code: 'Q7',
+            source: 'Question check',
+            title: q.question,
+            verdict: 'issue',
+            notes: q.issues,
+            fix: q.fix,
+            at: undefined,
+            atSec: undefined,
+            question: q as never,
+            ...over,
+          }),
+        )
+        fixture.detectChanges()
+      }
+
+      it('lists every option, tags the marked and the suggested answer, and says what is wrong with one', () => {
+        open(q7({ verdict: 'wrong', suggested: 'D', why: 'Treatment must not wait for investigations.', source: 'WHO ETAT' }))
+        const rows = Array.from(el().querySelectorAll('.air-ev-option'))
+        expect(rows.map(r => r.querySelector('.air-ev-option-label')!.textContent!.trim())).toEqual(['A', 'B', 'C', 'D'])
+        expect(rows[1]!.classList).toContain('air-ev-option--marked')
+        expect(rows[1]!.textContent).toContain('Marked answer')
+        expect(rows[3]!.classList).toContain('air-ev-option--suggested')
+        expect(rows[3]!.textContent).toContain('Suggested answer')
+        expect(rows[2]!.textContent).toContain('A urine test plays no part in triage.')
+        const answer = el().querySelector('.air-ev-answer--red')!.textContent!
+        expect(answer).toContain('The marked answer is wrong')
+        expect(answer).toContain('B (Chest X-ray)')
+        expect(answer).toContain('D (Pulse oximetry)')
+        expect(answer).toContain('WHO ETAT')
+        expect(el().textContent).toContain('Other problems with this question')
+        expect(el().textContent).toContain('What to change or add')
+      })
+
+      it('asks for a check, with what to verify, when the reviewer is not certain, and suggests nothing', () => {
+        open(q7({ verdict: 'check', why: 'Verify the target SpO2 for preterm newborns against FBNC.' }), {
+          borderline: true,
+          check: 'Not confirmed.',
+        })
+        expect(el().querySelector('.air-ev-answer--amber')!.textContent).toContain('Please check the marked answer')
+        expect(el().querySelector('.air-ev-answer--amber')!.textContent).toContain('against FBNC')
+        expect(el().querySelector('.air-ev-option--suggested')).toBeNull()
+        expect(component.chip()).toEqual({ label: 'Please check', tone: 'amber' })
+      })
+
+      it('says when the marked answer is correct, and shows older findings without options as before', () => {
+        const ok = q7({ verdict: 'correct', why: '' }, { optionIssues: [] })
+        expect(component.answerView(ok as never)).toMatchObject({
+          tone: 'green',
+          title: 'The marked answer is correct',
+          marked: 'B (Chest X-ray)',
+        })
+        expect(component.answerView({ ...ok, answer: undefined } as never)).toBeNull()
+        open(q7({ verdict: 'correct', why: '' }, { options: undefined }))
+        expect(el().querySelector('.air-ev-options')).toBeNull()
+        expect(el().querySelector('.air-ev-question')!.textContent).toContain('most critical test')
+      })
+
+      it('shows the options of a question a checklist note names', () => {
+        component.open(
+          evidence({
+            item: item({
+              kind: 'quiz',
+              mimeType: 'application/json',
+              result: { questions: [q7({ verdict: 'correct', why: '' })] } as never,
+            }),
+            code: 'C2',
+            notes: ['Q7 keys the wrong test.'],
+            at: undefined,
+            atSec: undefined,
+          }),
+        )
+        fixture.detectChanges()
+        expect(el().querySelectorAll('.air-ev-option').length).toBe(4)
+      })
+    })
+
+    it("steps through the resource's findings with Previous and Next, and the arrow keys, without closing", () => {
+      const list = [
+        evidence({ code: 'C2', title: 'First finding' }),
+        evidence({ code: 'C3', title: 'Second finding' }),
+        evidence({ code: 'I2', title: 'Third finding' }),
+      ]
+      component.open(list[1]!, { list, index: 1 })
+      fixture.detectChanges()
+      const buttons = () => Array.from(el().querySelectorAll('.air-ev-step')) as HTMLButtonElement[]
+      expect(el().querySelector('.air-ev-count')!.textContent).toContain('2 of 3')
+      expect(el().querySelector('#air-ev-title')!.textContent).toContain('Second finding')
+      buttons()[1]!.click()
+      fixture.detectChanges()
+      expect(el().querySelector('#air-ev-title')!.textContent).toContain('Third finding')
+      expect(buttons()[1]!.disabled).toBe(true)
+      el()
+        .querySelector('dialog')!
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }))
+      fixture.detectChanges()
+      expect(el().querySelector('.air-ev-count')!.textContent).toContain('2 of 3')
+      buttons()[0]!.click()
+      buttons()[0]!.click()
+      fixture.detectChanges()
+      expect(component.stepIndex()).toBe(0)
+      expect(buttons()[0]!.disabled).toBe(true)
+      expect(component.evidence()).not.toBeNull()
+      // The arrows inside the video player are the player's.
+      component.go(1)
+      fixture.detectChanges()
+      el()
+        .querySelector('video')!
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
+      expect(component.stepIndex()).toBe(1)
+    })
+
+    it('shows no Previous and Next for a finding opened on its own', () => {
+      component.open(evidence())
+      fixture.detectChanges()
+      expect(el().querySelector('.air-ev-nav')).toBeNull()
+      component.close()
+      expect(component.steps()).toEqual([])
+    })
+
+    it('shows a finding it could not confirm as "Please check", with why, and not as a fault', () => {
+      component.open(evidence({ borderline: true, check: 'It rests on the exact letters of on-screen text.' }))
+      fixture.detectChanges()
+      expect(component.chip()).toEqual({ label: 'Please check', tone: 'amber' })
+      const check = el().querySelector('.air-ev-check')!.textContent!
+      expect(check).toContain('Treat it as a question to check, not as a fault')
+      expect(check).toContain('It rests on the exact letters of on-screen text.')
+      expect(el().textContent).toContain('What the review reported (not confirmed)')
+      expect(el().textContent).not.toContain('Not met')
+    })
+
+    it('shows a withdrawn finding as "Not judged", with why, and never the claim', () => {
+      component.open(
+        evidence({
+          verdict: 'na',
+          notes: [],
+          fix: undefined,
+          withdrawn: 'The review reported narration that the transcript does not contain, so the finding was removed.',
+        }),
+      )
+      fixture.detectChanges()
+      expect(component.chip()).toEqual({ label: 'Not judged', tone: 'na' })
+      expect(el().querySelector('.air-ev-withdrawn')!.textContent).toContain('transcript does not contain')
+      expect(el().textContent).not.toContain('Suggested fix')
+      expect(el().textContent).not.toContain('What the reviewer saw')
+    })
+
     it('never frames or plays an unsafe URL', () => {
       component.open(evidence({ item: item({ artifactUrl: 'javascript:alert(1)' }) }))
       fixture.detectChanges()

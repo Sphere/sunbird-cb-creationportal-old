@@ -1,5 +1,5 @@
 import { IAiReview } from '../models/ai-review.model'
-import { ANSWER_KEY_FIX, collectIssues } from './issues'
+import { ANSWER_KEY_FIX, answerLines, collectIssues, indicatorNote, indicatorVerdict, optionName } from './issues'
 
 const review = {
   items: [
@@ -184,5 +184,75 @@ describe('the answer key', () => {
       ],
     } as unknown as IAiReview
     expect(collectIssues(fit).find(i => i.source === 'alignment')?.place).toEqual({ at: '1:10', atSec: 70 })
+  })
+})
+
+describe('a question with the judgement of its answer', () => {
+  const options = [
+    { label: 'A', text: 'Blood sugar test', marked: false },
+    { label: 'B', text: 'Chest X-ray', marked: true },
+    { label: 'C', text: 'Urine test', marked: false },
+    { label: 'D', text: 'Pulse oximetry', marked: false },
+  ]
+  const q = (over: object = {}) => ({
+    n: 7,
+    question: 'Most critical test?',
+    verdict: 'issue' as const,
+    issues: ['The stem is vague.'],
+    options,
+    ...over,
+  })
+
+  it('names an option by its letter and its words', () => {
+    expect(optionName(q(), 'B')).toBe('B (Chest X-ray)')
+    expect(optionName({}, 'B')).toBe('B')
+  })
+
+  it('says which answer is marked, that it is wrong, the suggested one and its source', () => {
+    expect(answerLines(q({ answer: { verdict: 'wrong', suggested: 'D', why: 'Treatment must not wait.', source: 'WHO ETAT' } }))).toEqual([
+      'Marked answer B (Chest X-ray) is wrong. Suggested answer: D (Pulse oximetry). Treatment must not wait. (WHO ETAT)',
+    ])
+  })
+
+  it('asks for a check, with what to verify, instead of calling an uncertain answer wrong', () => {
+    expect(answerLines(q({ answer: { verdict: 'check', why: 'Verify against FBNC.' } }))).toEqual([
+      'Please check the marked answer B (Chest X-ray): Verify against FBNC.',
+    ])
+    expect(answerLines(q({ answer: { verdict: 'check', why: '' } }))[0]).toContain('check it with a subject expert')
+  })
+
+  it("lists each option's problem, and says nothing about a correct answer", () => {
+    expect(
+      answerLines(q({ answer: { verdict: 'correct', why: '' }, optionIssues: [{ option: 'C', problem: 'Not a triage test.' }] })),
+    ).toEqual(['Option C (Urine test): Not a triage test.'])
+    expect(answerLines(q())).toEqual([])
+  })
+
+  it('puts those lines first in the question finding, with the full question kept for the pop-up', () => {
+    const finding = q({ answer: { verdict: 'check', why: 'Verify against FBNC.' }, borderline: true })
+    const issues = collectIssues({
+      items: [{ contentId: 'do_q', name: 'Quiz', kind: 'quiz', status: 'done', result: { questions: [finding] } }],
+    } as never)
+    expect(issues[0]).toMatchObject({ id: 'Q7', borderline: true, question: finding })
+    expect(issues[0]!.finding).toBe('Please check the marked answer B (Chest X-ray): Verify against FBNC.\nThe stem is vague.')
+  })
+})
+
+describe('an indicator as the exports write it', () => {
+  const labels = { yes: 'Met', no: 'Not met', na: 'N/A' }
+
+  it('writes a withdrawn finding as "Not judged" with why, never its claim', () => {
+    const i = { verdict: 'na' as const, note: '', withdrawn: 'The material does not support it, so the finding was removed.' }
+    expect(indicatorVerdict(i, labels)).toBe('Not judged')
+    expect(indicatorNote(i)).toBe('The material does not support it, so the finding was removed.')
+  })
+
+  it('marks one it could not confirm "(please check)", with the reason under its note', () => {
+    expect(indicatorVerdict({ verdict: 'no', borderline: true }, labels)).toBe('Not met (please check)')
+    expect(indicatorNote({ note: 'Slide reads Posselting.', check: 'Read off a low-resolution frame.' })).toBe(
+      'Slide reads Posselting.\nCheck by hand: Read off a low-resolution frame.',
+    )
+    expect(indicatorVerdict({ verdict: 'yes' }, labels)).toBe('Met')
+    expect(indicatorNote({ note: 'Clear.' })).toBe('Clear.')
   })
 })

@@ -1,0 +1,14 @@
+@use '../ai-review-shared' as *;
+
+// The tabs are links: no underline, and the same look as the report's tab switches.
+:host {
+  display: block;
+}
+
+.air-pagetabs {
+  margin: 12px 0 0;
+
+  .air-covtab {
+    text-decoration: none;
+  }
+}

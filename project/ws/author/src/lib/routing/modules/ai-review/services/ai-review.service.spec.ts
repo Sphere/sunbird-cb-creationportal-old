@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEventType, provideHttpClient, withInterceptors } from '@angular/common/http'
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
-import { AI_REVIEW_API_BASE, AI_REVIEW_PACKAGE_BASE, AiReviewService, packagePreviewUrl } from './ai-review.service'
+import { AI_REVIEW_API_BASE, AI_REVIEW_PACKAGE_BASE, AiReviewService, adminParams, packagePreviewUrl } from './ai-review.service'
 
 describe('AiReviewService', () => {
   let service: AiReviewService
@@ -164,6 +164,24 @@ describe('AiReviewService', () => {
   it('percent-encodes ids', () => {
     service.get('a/b').subscribe()
     http.expectOne(`${AI_REVIEW_API_BASE}/reviews/a%2Fb`).flush({})
+  })
+
+  it('reads the admin report with only the filters that are set', () => {
+    expect(adminParams({ from: '2026-11-01', to: '', userId: ' u1 ', q: '  ' })).toEqual({ from: '2026-11-01', userId: 'u1' })
+    let page: unknown = null
+    service.adminReviews({ source: 'upload', q: 'BP' }, 50, 100).subscribe(p => (page = p))
+    const req = http.expectOne(r => r.url === `${AI_REVIEW_API_BASE}/admin/reviews`)
+    expect(req.request.method).toBe('GET')
+    expect(req.request.params.get('source')).toBe('upload')
+    expect(req.request.params.get('q')).toBe('BP')
+    expect(req.request.params.get('limit')).toBe('50')
+    expect(req.request.params.get('offset')).toBe('100')
+    req.flush({ reviews: [], page: { total: 0, limit: 50, offset: 100 }, costUsd: 0 })
+    expect(page).toEqual({ reviews: [], page: { total: 0, limit: 50, offset: 100 }, costUsd: 0 })
+    service.adminSummary({ from: '2026-11-01' }).subscribe()
+    const sum = http.expectOne(r => r.url === `${AI_REVIEW_API_BASE}/admin/summary`)
+    expect(sum.request.params.keys()).toEqual(['from'])
+    sum.flush({})
   })
 
   describe('errorMessage / errorCode', () => {

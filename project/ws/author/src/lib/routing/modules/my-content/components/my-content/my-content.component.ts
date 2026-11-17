@@ -175,6 +175,11 @@ export class MyContentComponent implements OnInit, OnDestroy {
     return (this.router.url || '').startsWith('/author/ai-review')
   }
 
+  /** The AI Review item shows only for AI reviewers and AI review admins. */
+  get canUseAiReview(): boolean {
+    return this.accessService.canUseAiReview()
+  }
+
   /** AI Review opens Past reviews (every review this account started, with New review on top). */
   openAiReview(): void {
     this.router.navigate([AI_REVIEW_HOME])

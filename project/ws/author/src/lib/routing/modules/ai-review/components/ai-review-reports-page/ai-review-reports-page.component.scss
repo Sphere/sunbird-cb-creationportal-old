@@ -1,0 +1,1271 @@
+@use '../ai-review-shared' as *;
+
+// Reports, in AI Studio's "Usage & spend" design (aastrika-ai-service frontend,
+// features/reports): an aurora, glass tiles each in its own tone with a picture of its
+// figure, and one panel whose tabs switch between the lists. Layout first, then the look.
+
+$rp-ai: #2f7aef;
+$rp-ai-2: #3b4fe0;
+$rp-grad: linear-gradient(135deg, #2f45d6, $rp-ai);
+$rp-blue: #2563eb;
+$rp-violet: #7c3aed;
+$rp-green: #059669;
+$rp-orange: #ea580c;
+$rp-amber: #d97706;
+$rp-red: #dc2626;
+$rp-slate: #475569;
+$rp-2xs: 11px;
+$rp-track: 0.06em;
+$rp-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82));
+$rp-lift:
+  inset 0 1px 0 rgba(255, 255, 255, 0.9),
+  0 1px 2px rgba(15, 23, 42, 0.04),
+  0 24px 48px -28px rgba(59, 79, 224, 0.4);
+
+[data-tone='blue'] {
+  --tone: #{$rp-blue};
+}
+[data-tone='violet'] {
+  --tone: #{$rp-violet};
+}
+[data-tone='green'] {
+  --tone: #{$rp-green};
+}
+[data-tone='orange'] {
+  --tone: #{$rp-orange};
+}
+[data-tone='slate'] {
+  --tone: #{$rp-slate};
+}
+
+.rp {
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  // AI Studio's typeface and its natural spacing, not the portal's tracked Roboto.
+  font-family: $air-font;
+  letter-spacing: normal;
+  color: $air-ink;
+}
+
+// Zero specificity: the portal's global p/td/span rules lose to this, and every class below
+// that sets its own tracking (labels, chips, headers) still wins.
+.rp :where(p, td, th, span, b, small, button, input, label, a, h1, h2) {
+  font-family: inherit;
+  letter-spacing: inherit;
+}
+
+.rp-aurora {
+  position: absolute;
+  inset: -60px -32px auto;
+  height: 900px;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(34% 50% at 88% 4%, rgba(236, 72, 153, 0.12), transparent 70%),
+    radial-gradient(40% 60% at 64% 0%, rgba(79, 70, 229, 0.2), transparent 72%),
+    radial-gradient(38% 55% at 30% 2%, rgba(6, 182, 212, 0.16), transparent 70%);
+  filter: blur(24px);
+}
+
+// ---- the header, and the two choices the report follows ---------------------------------
+
+.rp-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.rp-head-text {
+  min-width: 0;
+  flex: 1 1 420px;
+}
+
+.rp-title {
+  margin: 12px 0 4px;
+  font-family: $air-font;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, $air-ink 55%, $air-primary-deep);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.rp-sub {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.5;
+  color: $air-text-2;
+}
+
+.rp-picks {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+// A small label over its value, as AI Studio's "Showing" picker.
+.rp-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.rp-pick-k {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: $rp-2xs;
+  font-weight: 700;
+  letter-spacing: $rp-track;
+  text-transform: uppercase;
+  color: $air-muted;
+
+  ws-auth-air-icon {
+    color: var(--tone);
+  }
+}
+
+.rp-dates {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin: -8px 0 16px;
+
+  .air-error {
+    margin: 0;
+  }
+}
+
+.rp-datefield {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 170px;
+  font-size: $rp-2xs;
+  font-weight: 700;
+  letter-spacing: $rp-track;
+  text-transform: uppercase;
+  color: $air-muted;
+}
+
+// ---- figures ---------------------------------------------------------------------------
+
+// Four across when there is room, the spend tile the widest; otherwise three over a full-
+// width spend tile, never a row with a hole in it.
+.rp-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.rp-tile--wide {
+  grid-column: 1 / -1;
+}
+
+@container (min-width: 980px) {
+  .rp-tiles {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.3fr);
+  }
+
+  .rp-tile--wide {
+    grid-column: auto;
+  }
+}
+
+@container (max-width: 560px) {
+  .rp-tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.rp-tile {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 124px;
+  padding: 16px 18px 18px;
+  border-radius: 18px;
+  background: $rp-glass;
+  border: 1px solid transparent;
+  box-shadow: $rp-lift;
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+
+  // A strip of its own colour along the top, and a glow in the corner.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, var(--tone), color-mix(in srgb, var(--tone) 25%, transparent)) top / 100% 3px no-repeat,
+      radial-gradient(90% 80% at 100% 0%, color-mix(in srgb, var(--tone) 14%, transparent), transparent 60%);
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      $rp-lift,
+      0 22px 36px -22px color-mix(in srgb, var(--tone) 70%, transparent);
+  }
+
+  &:hover .rp-tile-mark {
+    opacity: 0.1;
+    transform: rotate(-4deg) scale(1.05);
+  }
+}
+
+.rp-tile--accent {
+  border-color: rgba(47, 122, 239, 0.22);
+
+  &::before {
+    background:
+      linear-gradient(90deg, #2f45d6, #06b6d4, #f97316) top / 100% 3px no-repeat,
+      radial-gradient(70% 120% at 100% 0%, rgba(79, 70, 229, 0.16), transparent 60%),
+      radial-gradient(60% 120% at 0% 100%, rgba(6, 182, 212, 0.12), transparent 60%);
+  }
+
+  .rp-tile-ico {
+    background: $rp-grad;
+    box-shadow: 0 8px 18px -8px rgba(59, 79, 224, 0.85);
+  }
+}
+
+.rp-tile-mark {
+  position: absolute;
+  right: -18px;
+  bottom: -34px;
+  color: var(--tone);
+  opacity: 0.05;
+  transform: rotate(-12deg);
+  pointer-events: none;
+  transition:
+    transform 0.4s,
+    opacity 0.4s;
+}
+
+.rp-tile-body {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rp-tile-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+.rp-tile-ico {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tone) 70%, #fff), var(--tone));
+  box-shadow:
+    0 8px 18px -8px color-mix(in srgb, var(--tone) 85%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.rp-tile-l {
+  font-size: $rp-2xs;
+  font-weight: 700;
+  letter-spacing: $rp-track;
+  text-transform: uppercase;
+  color: $air-text-2;
+}
+
+// Tabular numerals, so a figure does not jitter as it changes.
+.rp-tile-n {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: $air-ink;
+}
+
+.rp-grad-num {
+  background: $rp-grad;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.rp-tile-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: $air-text-2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  b {
+    color: $air-ink;
+  }
+}
+
+.rp-stat {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 9%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 20%, transparent);
+
+  b {
+    font-size: 13px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.rp-faces {
+  display: flex;
+  margin-top: 6px;
+}
+
+.rp-face {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin-left: -6px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 12%, #fff);
+  box-shadow:
+    0 0 0 2px #fff,
+    inset 0 0 0 1px color-mix(in srgb, var(--tone) 25%, transparent);
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+.rp-face--more {
+  color: $air-text-2;
+  background: $air-surface-2;
+}
+
+.rp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.rp-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: $air-text-2;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 0 0 1px $air-line;
+
+  b {
+    color: $air-ink;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.rp-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $rp-grad;
+}
+
+// This month's share of the budget, as a ring; red from 80%.
+.rp-ring {
+  --p: 0;
+  flex: none;
+  align-self: center;
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(#2f45d6 0, $rp-ai calc(var(--p) * 1%), #e8edf8 calc(var(--p) * 1%));
+  box-shadow: 0 12px 26px -14px rgba(59, 79, 224, 0.7);
+  animation: rp-pop 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.08);
+  }
+
+  > span {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: $rp-ai-2;
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    margin-top: 1px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: $air-muted;
+  }
+}
+
+.rp-ring--high {
+  background: conic-gradient(#f97316 0, $rp-red calc(var(--p) * 1%), #f8e8e4 calc(var(--p) * 1%));
+
+  > span {
+    color: $rp-red;
+  }
+}
+
+@keyframes rp-pop {
+  from {
+    transform: scale(0.6) rotate(-90deg);
+    opacity: 0;
+  }
+}
+
+// ---- the panel and its lists -------------------------------------------------------------
+
+.rp-panel {
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  border-radius: 18px;
+  background: $rp-glass;
+  border: 1px solid transparent;
+  box-shadow: $rp-lift;
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+}
+
+.rp-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: $air-danger;
+
+  span {
+    flex: 1;
+  }
+}
+
+.rp-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.rp-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: $rp-glass;
+  box-shadow: $rp-lift;
+}
+
+.rp-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 6px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: $air-text-2;
+
+  &:hover {
+    color: $air-ink;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+
+  &:not(.on) .rp-tab-ico {
+    --tone: #{$air-muted};
+  }
+
+  &.on {
+    font-weight: 650;
+    color: $air-primary-deep;
+    background: #fff;
+    box-shadow:
+      0 1px 3px rgba(15, 23, 42, 0.12),
+      0 0 0 1px rgba(47, 95, 232, 0.18);
+  }
+}
+
+.rp-tab-ico {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--tone);
+  background: linear-gradient(150deg, color-mix(in srgb, var(--tone) 20%, #fff), color-mix(in srgb, var(--tone) 6%, #fff) 70%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--tone) 22%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.rp-tab-n {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: $air-text-2;
+  background: $air-surface-2;
+}
+
+.rp-tab.on .rp-tab-n {
+  color: $air-primary-deep;
+  background: $air-primary-soft;
+}
+
+.rp-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rp-filter {
+  width: 180px;
+}
+
+.rp-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 220px;
+
+  ws-auth-air-icon {
+    position: absolute;
+    left: 12px;
+    color: $air-muted;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    padding-left: 36px;
+  }
+}
+
+.rp-search input.rp-search--active {
+  border-color: rgba(47, 95, 232, 0.55);
+  background: #f2f6ff;
+  font-weight: 600;
+  color: $air-primary-deep;
+}
+
+// The filters in use: one chip each, removable on its own, and Clear all at the end.
+.rp-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -4px 0 14px;
+}
+
+.rp-chips-k {
+  font-size: $rp-2xs;
+  font-weight: 700;
+  letter-spacing: $rp-track;
+  text-transform: uppercase;
+  color: $air-muted;
+}
+
+.rp-fchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 320px;
+  padding: 4px 4px 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: $air-primary-deep;
+  background: $air-primary-soft;
+  box-shadow: inset 0 0 0 1px rgba(47, 95, 232, 0.25);
+  animation: rp-chip-in 0.16s ease-out both;
+
+  b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+}
+
+.rp-fchip-k {
+  flex: none;
+  color: $air-text-2;
+}
+
+.rp-fchip-x {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  color: $air-primary-deep;
+
+  &:hover {
+    color: #fff;
+    background: $rp-grad;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 1px;
+  }
+}
+
+@keyframes rp-chip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+.rp-clear {
+  padding: 4px 6px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: $air-primary;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Columns share the width rather than each taking what it wants: without a fixed layout a
+// long Hindi course name pushes the table past its panel and squeezes the numbers.
+.rp-tw {
+  overflow-x: auto;
+  border-radius: 12px;
+}
+
+.rp-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+
+  th {
+    padding: 10px 12px;
+    text-align: left;
+    white-space: nowrap;
+    font-size: $rp-2xs;
+    font-weight: 700;
+    letter-spacing: $rp-track;
+    text-transform: uppercase;
+    color: $air-muted;
+    background: rgba(248, 250, 252, 0.8);
+    border-bottom: 1px solid $air-line;
+
+    &:first-child {
+      border-top-left-radius: 10px;
+    }
+
+    &:last-child {
+      border-top-right-radius: 10px;
+    }
+  }
+
+  td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr {
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(47, 122, 239, 0.04);
+    }
+  }
+
+  .rp-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.rp-table--reviews {
+  min-width: 1040px;
+}
+
+.c-type {
+  width: 92px;
+}
+
+.c-datetime {
+  width: 150px;
+}
+
+.c-who {
+  width: 180px;
+}
+
+.c-status {
+  width: 130px;
+}
+
+.c-outcome {
+  width: 200px;
+}
+
+.c-cost {
+  width: 104px;
+}
+
+.c-date {
+  width: 108px;
+}
+
+.c-n {
+  width: 96px;
+}
+
+.c-share {
+  width: 180px;
+}
+
+// A person's or a course's part of the period's spend: a short bar and the share.
+.rp-share {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  b {
+    min-width: 36px;
+    text-align: right;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: $air-text-2;
+  }
+}
+
+.rp-share-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: $air-line;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: $rp-grad;
+  }
+}
+
+.c-act {
+  width: 96px;
+}
+
+// The name takes what is left, two lines at most, the rest on hover.
+.rp-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+  line-height: 1.4;
+  color: $air-ink;
+}
+
+.rp-kind {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: $rp-track;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--tone) 88%, #000);
+  background: color-mix(in srgb, var(--tone) 10%, #fff);
+  border: 1px solid color-mix(in srgb, var(--tone) 24%, transparent);
+}
+
+.rp-meta {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: $air-muted;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rp-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: $air-text-2;
+}
+
+.rp-who--strong {
+  font-weight: 600;
+  color: $air-ink;
+}
+
+.rp-avatar {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  color: $rp-ai-2;
+  background: color-mix(in srgb, #{$rp-ai} 12%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #{$rp-ai} 22%, transparent);
+}
+
+// A status, told by colour and a dot; the dot pulses while the review is still going.
+.rp-status {
+  --st: #{$rp-amber};
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 2px 9px;
+  border-radius: 999px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: $rp-2xs;
+  font-weight: 700;
+  letter-spacing: $rp-track;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--st) 90%, #000);
+  background: color-mix(in srgb, var(--st) 10%, #fff);
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--st);
+  }
+
+  &[data-status='done'] {
+    --st: #{$rp-green};
+  }
+
+  &[data-status='running'],
+  &[data-status='queued'] {
+    --st: #{$rp-blue};
+
+    &::before {
+      animation: rp-pulse 1.4s ease-in-out infinite;
+    }
+  }
+
+  &[data-status='failed'] {
+    --st: #{$rp-red};
+  }
+
+  &[data-status='cancelled'] {
+    --st: #{$rp-slate};
+  }
+}
+
+@keyframes rp-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.rp-outcome {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  color: $air-text-2;
+}
+
+// What the figures mean: one quiet line under the tiles.
+.rp-about {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: -4px 0 16px;
+  padding: 0 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: $air-text-2;
+
+  ws-auth-air-icon {
+    flex: none;
+    margin-top: 2px;
+    color: $air-muted;
+  }
+
+  b {
+    color: $air-ink;
+  }
+}
+
+.rp-cost {
+  font-weight: 600;
+  color: $air-ink;
+}
+
+.rp-date {
+  font-size: 12px;
+  color: $air-text-2;
+  white-space: nowrap;
+}
+
+.rp-made {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: $air-muted;
+}
+
+// Two plain figures of the same width: what a tile adds to its number (AI Studio's).
+.rp-legs-even {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 260px;
+
+  .rp-leg {
+    justify-content: space-between;
+    min-width: 0;
+  }
+}
+
+.rp-muted-cell {
+  color: $air-muted;
+}
+
+// Row actions: a soft pill that fills with the AI gradient under the cursor, on the row's
+// right edge.
+.rp-act-col,
+.rp-row-actions {
+  text-align: right;
+}
+
+.rp-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 999px;
+  color: $rp-ai-2;
+  background: color-mix(in srgb, #{$rp-ai} 9%, #fff);
+  border: 1px solid color-mix(in srgb, #{$rp-ai} 26%, transparent);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+
+  &:not(:disabled):hover {
+    color: #fff;
+    background: $rp-grad;
+    border-color: transparent;
+    box-shadow: 0 6px 14px -8px rgba(59, 79, 224, 0.8);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+}
+
+// ---- paging ------------------------------------------------------------------------------
+
+.rp-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid $air-line;
+}
+
+.rp-pager-range,
+.rp-foot {
+  font-size: 12px;
+  color: $air-muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.rp-foot {
+  margin: 12px 0 0;
+}
+
+.rp-pager-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rp-pager-of {
+  padding: 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $air-text-2;
+  font-variant-numeric: tabular-nums;
+}
+
+.rp-pager-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: $air-text-2;
+  background: #fff;
+  border: 1px solid $air-line-2;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+
+  &:not(:disabled):hover {
+    color: #fff;
+    background: $rp-grad;
+    border-color: transparent;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 2px;
+  }
+}
+
+.rp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  text-align: center;
+  color: $air-muted;
+
+  p {
+    margin: 0;
+  }
+}
+
+// ---- loading: the page's own shape, with a light travelling across ------------------------
+
+.rp-tile--skel::before {
+  display: none;
+}
+
+.rp-skel {
+  display: block;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent) 0 0 / 40% 100% no-repeat,
+    rgba(15, 23, 42, 0.08);
+  animation: rp-skel 1.4s ease-in-out infinite;
+}
+
+@keyframes rp-skel {
+  to {
+    background-position: 260% 0;
+  }
+}
+
+.rp-skel-ico {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+}
+
+.rp-skel-avatar {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+
+.rp-skel-line {
+  height: 12px;
+  width: 100%;
+}
+
+.rp-skel-sm {
+  width: 38%;
+  height: 12px;
+}
+
+.rp-skel-lg {
+  width: 62%;
+  height: 22px;
+  margin-top: 8px;
+}
+
+.rp-skel-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 4px;
+}
+
+.rp-skel-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .rp-skel-line:first-of-type {
+    max-width: 260px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-fchip,
+  .rp-skel,
+  .rp-status::before,
+  .rp-ring {
+    animation: none;
+  }
+
+  .rp-tile,
+  .rp-tile:hover,
+  .rp-tile-mark {
+    transition: none;
+    transform: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .rp-pick,
+  .rp-filter,
+  .rp-search {
+    flex: 1 1 100%;
+    width: auto;
+    min-width: 0;
+  }
+
+  .rp-tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .rp-tab {
+    flex: 1;
+    justify-content: center;
+  }
+}

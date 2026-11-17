@@ -73,6 +73,7 @@ describe('AppTocBannerComponent', () => {
       hasRole: jest.fn().mockReturnValue(false),
       hasAccess: jest.fn().mockReturnValue(false),
       isCourseMember: jest.fn().mockReturnValue(false),
+      canAiReviewCourse: jest.fn().mockReturnValue(false),
     }
     cdr = { detectChanges: jest.fn() }
     resourceDownloadSvc = {
@@ -636,11 +637,18 @@ describe('AppTocBannerComponent', () => {
     })
 
     describe('canAiReview', () => {
-      it("is offered to the course's creator, reviewers and publishers", () => {
-        authAccessService.isCourseMember.mockReturnValue(true)
+      it("is offered to AI_REVIEWER users who are the course's creator, a reviewer or a publisher", () => {
+        authAccessService.canAiReviewCourse.mockReturnValue(true)
         component.content = content({ reviewerIDs: ['u1'] })
         expect(component.canAiReview).toBe(true)
-        expect(authAccessService.isCourseMember).toHaveBeenCalledWith(component.content)
+        expect(authAccessService.canAiReviewCourse).toHaveBeenCalledWith(component.content)
+      })
+
+      it('is not offered to a course member without the AI_REVIEWER role', () => {
+        authAccessService.isCourseMember.mockReturnValue(true)
+        authAccessService.canAiReviewCourse.mockReturnValue(false)
+        component.content = content({ createdBy: 'u1' })
+        expect(component.canAiReview).toBe(false)
       })
 
       it('is not offered to someone not added to the course, whatever their role', () => {
@@ -651,7 +659,7 @@ describe('AppTocBannerComponent', () => {
       })
 
       it('is only offered on courses', () => {
-        authAccessService.isCourseMember.mockReturnValue(true)
+        authAccessService.canAiReviewCourse.mockReturnValue(true)
         component.content = content({ contentType: 'Resource' })
         expect(component.canAiReview).toBe(false)
         component.content = null

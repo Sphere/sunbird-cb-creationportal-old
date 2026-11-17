@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, computed, inject, input, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AiReviewService } from '../../services/ai-review.service'
 import { judgedAgainst, mediaNotes, recallLine, reportWords } from '../../utils/report-export'
@@ -21,7 +21,7 @@ import {
   IAiReviewScoredItem,
   isPassError,
 } from '../../models/ai-review.model'
-import { AirEvidenceComponent } from '../air-evidence/air-evidence.component'
+import { AirEvidence, AirEvidenceComponent } from '../air-evidence/air-evidence.component'
 import { AirIconName } from '../air-icon/air-icon.component'
 
 export { locateText } from '../../utils/report-detail'
@@ -74,6 +74,31 @@ export function deliversLabel(verdict: string): string {
   )
 }
 
+/**
+ * The subject expert's checks, as the review service asks them (src/prompts/domain-indicators.ts),
+ * from the client's spec (docs/Video_Reviewer_spec.md): six in the plain style; FRAC swaps D2–D4
+ * for level fit, MECE and coverage, and adds D7 so accuracy is still checked.
+ */
+export const DOMAIN_CHECKS: Record<'plain' | 'frac', { id: string; text: string }[]> = {
+  plain: [
+    { id: 'D1', text: 'The content belongs to this competency and topic.' },
+    { id: 'D2', text: 'It teaches what the level description specifies.' },
+    { id: 'D3', text: 'Nothing essential in the level is skipped, garbled or taught incorrectly.' },
+    { id: 'D4', text: 'Clinical and procedural accuracy under Indian public-health practice.' },
+    { id: 'D5', text: 'Right for the learners: depth, language and safety emphasis suit the health workers the level is meant for.' },
+    { id: 'D6', text: "The skill is shown in the health worker's real work setting." },
+  ],
+  frac: [
+    { id: 'D1', text: "Within this competency's territory, not a different competency's." },
+    { id: 'D2', text: 'Level fit: pitched at the level, not below it and not above it.' },
+    { id: 'D3', text: 'MECE: stays inside the level, without drifting into the others.' },
+    { id: 'D4', text: 'Coverage: no essential step, criterion or component is skipped or garbled.' },
+    { id: 'D5', text: 'Role fit: prepares the position for its FRAC activities (or suits the cadre).' },
+    { id: 'D6', text: 'Activity realism: the skill is shown the way the job is done.' },
+    { id: 'D7', text: 'Clinical and procedural accuracy under Indian public-health practice.' },
+  ],
+}
+
 /** The indicators a resource did not meet, in checklist order. */
 export function notMet(score: IAiReviewScore): IAiReviewScoredItem[] {
   return score.areas.reduce<IAiReviewScoredItem[]>((acc, area) => acc.concat(area.items.filter(i => i.verdict === 'no')), [])
@@ -119,6 +144,28 @@ export class AiReviewReportComponent {
   readonly judgedAgainst = computed(() => judgedAgainst(this.review().options))
   /** The FRAC role checked, or why not (FRAC style only). */
   readonly role = computed(() => (this.review().options?.domainStyle === 'frac' ? this.review().options.role || null : null))
+
+  /** The subject checks this review asked, by its style: what the "i" beside the domain score lists. */
+  readonly domainChecks = computed(() => DOMAIN_CHECKS[this.review().options?.domainStyle === 'frac' ? 'frac' : 'plain'])
+  /** Which score card's explanation is open, if any. */
+  readonly info = signal<'addie' | 'domain' | null>(null)
+
+  toggleInfo(which: 'addie' | 'domain'): void {
+    this.info.update(open => (open === which ? null : which))
+  }
+
+  /** Escape, or a click anywhere outside the explanation and its button, closes it. */
+  @HostListener('document:keydown.escape')
+  closeInfo(): void {
+    this.info.set(null)
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeInfoOutside(event: Event): void {
+    if (this.info() && !(event.target instanceof Element && event.target.closest('.air-info'))) {
+      this.info.set(null)
+    }
+  }
   readonly roleNote = computed(() => (this.review().options?.domainStyle === 'frac' ? this.review().options.roleNote || '' : ''))
 
   /** How much of the competency level the course covers, for the summary card. */
@@ -151,20 +198,35 @@ export class AiReviewReportComponent {
     document.getElementById(`air-res-${contentId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  /** Opens an issue in place: the resource at its moment or page, with the finding and fix. */
+  /**
+   * Opens an issue in place: the resource at its moment or page, with the finding and fix. The
+   * pop-up can step through the rest of that resource's "To fix" list with Previous and Next.
+   */
   openIssue(x: Issue): void {
-    this.evidence()?.open({
+    const list = (this.fixGroups().get(x.item.contentId) || []).flatMap(g => g.issues)
+    const index = list.indexOf(x)
+    const e = this.issueEvidence(x)
+    this.evidence()?.open(e, index >= 0 ? { list: list.map(i => (i === x ? e : this.issueEvidence(i))), index } : undefined)
+  }
+
+  /** One issue as the pop-up shows it. */
+  private issueEvidence(x: Issue): AirEvidence {
+    return {
       item: this.latest(x.item),
       code: x.id,
       source: ISSUE_SOURCES[x.source],
       title: x.what,
       verdict: x.tone,
-      notes: x.finding ? x.finding.split('\n') : [],
+      // A question shows its answer and options in their own places; the notes are the rest.
+      notes: x.question ? x.question.issues : x.finding ? x.finding.split('\n') : [],
       fix: x.fix || undefined,
       at: x.place.at,
       atSec: x.place.atSec,
       page: x.place.page,
-    })
+      ...(x.borderline ? { borderline: true } : {}),
+      ...(x.check ? { check: x.check } : {}),
+      ...(x.question ? { question: x.question } : {}),
+    }
   }
 
   /** Which coverage statuses the list shows. */
@@ -228,20 +290,38 @@ export class AiReviewReportComponent {
       })
   }
 
-  /** Opens a checklist indicator in place: the resource at its moment or page, and the fix. */
+  /**
+   * Opens a checklist indicator in place: the resource at its moment or page, and the fix. The
+   * pop-up can step through the rest of that resource's checklist with Previous and Next.
+   */
   openIndicator(item: IAiReviewItem, indicator: IAiReviewScoredItem): void {
-    this.evidence()?.open({
+    const addie = item.result?.addie && !isPassError(item.result.addie) ? item.result.addie : null
+    const list = addie ? addie.score.areas.flatMap(a => a.items) : []
+    const index = list.indexOf(indicator)
+    const e = this.indicatorEvidence(item, indicator)
+    this.evidence()?.open(
+      e,
+      index >= 0 ? { list: list.map(i => (i === indicator ? e : this.indicatorEvidence(item, i))), index } : undefined,
+    )
+  }
+
+  /** One checklist indicator as the pop-up shows it. */
+  private indicatorEvidence(item: IAiReviewItem, indicator: IAiReviewScoredItem): AirEvidence {
+    return {
       item: this.latest(item),
       code: indicator.id,
       source: 'CBP / ADDIE checklist',
       title: indicator.text,
       verdict: indicator.verdict,
-      notes: indicator.note ? [indicator.note] : [],
-      fix: indicator.fix,
+      notes: indicator.note && !indicator.withdrawn ? [indicator.note] : [],
+      fix: indicator.withdrawn ? undefined : indicator.fix,
       at: indicator.at,
       atSec: indicator.atSec,
       page: indicator.page,
-    })
+      ...(indicator.borderline ? { borderline: true } : {}),
+      ...(indicator.check ? { check: indicator.check } : {}),
+      ...(indicator.withdrawn ? { withdrawn: indicator.withdrawn } : {}),
+    }
   }
 
   openCoverage(item: IAiReviewItem, row: IAiReviewCoverageRow): void {

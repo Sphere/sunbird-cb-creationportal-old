@@ -7,7 +7,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { IAiReview, IAiReviewItem, IAiReviewScore } from '../../models/ai-review.model'
 import { AirEvidenceComponent } from '../air-evidence/air-evidence.component'
 import { AirIconComponent } from '../air-icon/air-icon.component'
-import { AiReviewReportComponent, locateText, notMet, toReportRow } from './ai-review-report.component'
+import { AiReviewReportComponent, DOMAIN_CHECKS, locateText, notMet, toReportRow } from './ai-review-report.component'
 
 const score = (): IAiReviewScore => ({
   areas: [
@@ -242,7 +242,7 @@ describe('AiReviewReportComponent', () => {
     it('shows each resource with its fixes, and a failed resource with its error', () => {
       const text = el.textContent || ''
       expect(text).toContain('Fix: Place the cuff on bare skin')
-      expect(text).toContain('Borderline')
+      expect(text).toContain('Please check')
       expect(text).toContain('Pitched below the level')
       // A finding the guard doubts says why, for a person to check.
       fixture.componentRef.setInput(
@@ -369,6 +369,83 @@ describe('AiReviewReportComponent', () => {
       expect(dialog.hasAttribute('open')).toBe(true)
       expect(dialog.textContent).toContain('Cuff placement shown correctly')
       expect(dialog.textContent).toContain('Place the cuff on bare skin')
+    })
+
+    it('explains each score from its "i": the domain checks by style, and why the checklist total is not 47', () => {
+      const info = (label: RegExp) =>
+        Array.from(el.querySelectorAll('.air-info-btn')).find(b => label.test(b.getAttribute('aria-label') || '')) as HTMLButtonElement
+      const domain = info(/domain review/)
+      domain.click()
+      fixture.detectChanges()
+      expect(domain.getAttribute('aria-expanded')).toBe('true')
+      const panel = el.querySelector('#air-info-domain')!.textContent!
+      expect(el.querySelectorAll('#air-info-domain .air-info-item').length).toBe(6)
+      expect(panel).toContain('D4')
+      expect(panel).toContain("From the client's Video Reviewer spec")
+      // One open at a time; the same button, Escape and a click elsewhere close it.
+      info(/checklist score/).click()
+      fixture.detectChanges()
+      expect(el.querySelector('#air-info-domain')).toBeNull()
+      expect(el.querySelector('#air-info-addie')!.textContent).toContain('so the total here is')
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      fixture.detectChanges()
+      expect(el.querySelector('#air-info-addie')).toBeNull()
+      domain.click()
+      fixture.detectChanges()
+      document.body.click()
+      fixture.detectChanges()
+      expect(el.querySelector('#air-info-domain')).toBeNull()
+      // FRAC asks seven.
+      expect(DOMAIN_CHECKS.frac.map(c => c.id)).toEqual(['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7'])
+    })
+
+    it('opens a doubted issue as "Please check", and a question with its options and answer', () => {
+      const issue = Array.from(el.querySelectorAll('button.air-indicator--open')).find(b =>
+        /Cuff placement/.test(b.textContent || ''),
+      ) as HTMLButtonElement
+      issue.click()
+      fixture.detectChanges()
+      expect(el.querySelector('dialog .air-ev-check')).not.toBeNull()
+
+      const question = {
+        n: 7,
+        question: 'Most critical test?',
+        verdict: 'issue' as const,
+        issues: ['The stem is vague.'],
+        fix: 'Mark D.',
+        options: [
+          { label: 'A', text: 'Blood sugar', marked: false },
+          { label: 'B', text: 'Chest X-ray', marked: true },
+        ],
+        answer: { verdict: 'wrong' as const, suggested: 'A', why: 'Treat first.', source: 'WHO ETAT' },
+      }
+      fixture.componentInstance.openIssue({
+        item: item({ kind: 'quiz', mimeType: 'application/json' }),
+        source: 'question',
+        id: 'Q7',
+        what: question.question,
+        verdict: 'Needs attention',
+        tone: 'issue',
+        finding: 'Marked answer B (Chest X-ray) is wrong.\nThe stem is vague.',
+        fix: question.fix,
+        place: {},
+        question,
+      })
+      fixture.detectChanges()
+      const dialog = el.querySelector('dialog')!
+      expect(dialog.querySelectorAll('.air-ev-option').length).toBe(2)
+      expect(dialog.querySelector('.air-ev-answer--red')!.textContent).toContain('A (Blood sugar)')
+      // The answer is said once, in its own block; the notes are the other problems.
+      expect(Array.from(dialog.querySelectorAll('.air-ev-note')).map(n => n.textContent!.trim())).toEqual(['The stem is vague.'])
+    })
+
+    it('shows a withdrawn indicator as "Not judged", with why, and never its claim', () => {
+      const why = 'The review reported narration that the transcript does not contain, so the finding was removed.'
+      const withdrawn = { id: 'C2', text: 'Content is accurate', verdict: 'na' as const, note: '', withdrawn: why }
+      fixture.componentInstance.openIndicator(item(), withdrawn)
+      fixture.detectChanges()
+      expect(el.querySelector('dialog .air-ev-withdrawn')!.textContent).toContain('transcript does not contain')
+      expect(el.querySelector('dialog')!.textContent).toContain('Not judged')
     })
 
     it('gets a fresh link for a file whose link expired, and keeps it for later issues', () => {

@@ -1,0 +1,44 @@
+:host {
+  display: inline-flex;
+}
+
+// On a card with no competency chips: its own row, with a little space, only when there is a mark.
+:host(.ai-mark-row:not(:empty)) {
+  display: flex;
+  margin: 4px 0 3px;
+}
+
+// The same size and shape as the card's competency chips beside it, in the AI review's violet,
+// so it reads as one more tag on the course and not as a button.
+.ai-reviewed-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px 1px 5px;
+  border-radius: 4px;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: #5b3fd6;
+  background: #f1edff;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  svg {
+    flex: none;
+  }
+
+  &:hover {
+    background: #e4dcff;
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1c5d95;
+    outline-offset: 1px;
+  }
+}

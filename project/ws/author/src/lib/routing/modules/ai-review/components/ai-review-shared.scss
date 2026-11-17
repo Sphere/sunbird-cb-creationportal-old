@@ -873,3 +873,47 @@ $air-aurora:
     }
   }
 }
+
+// The audiences picked, one chip each, above the box that adds another.
+.air-aud-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.air-aud-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: $air-primary-deep;
+  background: $air-primary-soft;
+}
+
+.air-aud-x {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: $air-primary-deep;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(47, 95, 232, 0.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $air-focus;
+    outline-offset: 1px;
+  }
+}

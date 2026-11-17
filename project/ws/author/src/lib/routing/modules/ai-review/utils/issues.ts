@@ -1,4 +1,4 @@
-import { IAiReview, IAiReviewItem, isPassError } from '../models/ai-review.model'
+import { IAiReview, IAiReviewItem, IAiReviewQuestionFinding, IAiReviewScoredItem, isPassError } from '../models/ai-review.model'
 import { locateText, Place } from './report-detail'
 
 /**
@@ -32,6 +32,67 @@ export interface Issue {
   borderline?: boolean
   /** Why it needs checking, when the guard says. */
   check?: string
+  /** A question check's finding in full: its options, the marked answer and the judgement of it. */
+  question?: IAiReviewQuestionFinding
+}
+
+/**
+ * An indicator's verdict as every export writes it: "Not judged" when the service withdrew it,
+ * and "(please check)" after one it could not confirm.
+ */
+export function indicatorVerdict(
+  i: Pick<IAiReviewScoredItem, 'verdict' | 'borderline' | 'withdrawn'>,
+  labels: Record<string, string>,
+): string {
+  if (i.withdrawn) {
+    return 'Not judged'
+  }
+  const label = labels[i.verdict] || i.verdict
+  return i.borderline ? `${label} (please check)` : label
+}
+
+/** An indicator's note as every export writes it: the reason it was withdrawn, never the claim. */
+export function indicatorNote(i: Pick<IAiReviewScoredItem, 'note' | 'check' | 'withdrawn'>): string {
+  if (i.withdrawn) {
+    return i.withdrawn
+  }
+  return i.check ? `${i.note || ''}${i.note ? '\n' : ''}Check by hand: ${i.check}` : i.note || ''
+}
+
+/** "B (Chest X-ray)": an option by its letter and its words. */
+export function optionName(q: Pick<IAiReviewQuestionFinding, 'options'>, label: string): string {
+  const o = (q.options || []).find(x => x.label === label)
+  return o ? `${label} (${o.text})` : label
+}
+
+/**
+ * What a question finding says about its answer and options, in plain lines: the marked answer
+ * called wrong (with the suggested one and its guideline), or to be checked, and each option's
+ * problem. The report, its pop-up and every export show the same lines.
+ */
+export function answerLines(q: IAiReviewQuestionFinding): string[] {
+  const lines: string[] = []
+  const marked = (q.options || [])
+    .filter(o => o.marked)
+    .map(o => optionName(q, o.label))
+    .join(', ')
+  const a = q.answer
+  if (a?.verdict === 'wrong') {
+    const suggested = (a.suggested || '')
+      .split(/,\s*/)
+      .filter(Boolean)
+      .map(l => optionName(q, l))
+      .join(', ')
+    lines.push(
+      `Marked answer ${marked || '(none marked)'} is wrong. Suggested answer: ${suggested || 'see below'}. ${a.why}${a.source ? ` (${a.source})` : ''}`.trim(),
+    )
+  } else if (a?.verdict === 'check') {
+    lines.push(`Please check the marked answer${marked ? ` ${marked}` : ''}: ${a.why || 'check it with a subject expert.'}`)
+  }
+  for (const x of q.optionIssues || []) {
+    lines.push(`Option ${optionName(q, x.option)}: ${x.problem}`)
+  }
+  return lines
 }
 
 export const ISSUE_SOURCES: Record<IssueSource, string> = {
@@ -158,9 +219,10 @@ export function collectIssues(review: Pick<IAiReview, 'items'>, oneWord = 'resou
           what: q.question,
           verdict: 'Needs attention',
           tone: 'issue',
-          finding: q.issues.join('\n'),
+          finding: [...answerLines(q), ...q.issues].join('\n'),
           fix: q.fix || '',
           place: {},
+          question: q,
           ...(q.borderline ? { borderline: true } : {}),
           ...(q.check ? { check: q.check } : {}),
         }),

@@ -1,0 +1,18 @@
+@if (mark(); as m) {
+  <!-- The card itself opens the course; this opens its AI review report instead. -->
+  <a
+    class="ai-reviewed-mark"
+    [routerLink]="link()"
+    [queryParams]="{ review: m.reviewId }"
+    [attr.title]="when()"
+    [attr.aria-label]="when()"
+    (click)="$event.stopPropagation()"
+  >
+    <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" fill="currentColor">
+      <path
+        d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2zM19 14l.9 2.6 2.6.9-2.6.9L19 21l-.9-2.6-2.6-.9 2.6-.9L19 14z"
+      />
+    </svg>
+    <span>AI reviewed</span>
+  </a>
+}
