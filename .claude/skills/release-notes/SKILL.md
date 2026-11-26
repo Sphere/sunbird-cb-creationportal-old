@@ -141,7 +141,7 @@ const body=fs.readFileSync("RELEASE_NOTES/release-<X.Y.Z>.md","utf8");
   const r=await fetch("https://api.github.com/repos/Sphere/sunbird-cb-creationportal-old/releases",{
     method:"POST",
     headers:{Authorization:`Bearer ${process.env.GITHUB_TOKEN}`,Accept:"application/vnd.github+json","User-Agent":"release-script","X-GitHub-Api-Version":"2022-11-28"},
-    body:JSON.stringify({tag_name:"v<X.Y.Z>",name:"<X.Y.Z> — <title>",body,draft:false,prerelease:false})
+    body:JSON.stringify({tag_name:"v<X.Y.Z>",name:"cbp-release-<X.Y.Z>",body,draft:false,prerelease:false})
   });
   const j=await r.json();
   console.log("HTTP",r.status, j.html_url||JSON.stringify(j.errors||j.message));
@@ -156,5 +156,6 @@ HTTP 201 = published. Report the release URL. **Deploy** = point the manual Jenk
 - **Never push to `main` directly** — the bump + note land via a PR (step 8). **Never advance a previous/frozen release branch** (`release-5.0.1` stays pinned); each release gets its **own new** `release-<X.Y.Z>` build branch.
 - **Deploy is from the build BRANCH, not the tag.** Branch `release-<X.Y.Z>` (Jenkins deploy source) and tag `v<X.Y.Z>` (GitHub Release marker) **must have different names** — a same-named branch+tag is an ambiguous git ref.
 - **Tag ⇒ Release, always together** (step 9): when asked only to "create the tag/release", still do the whole step — `v<X.Y.Z>` tag + GitHub Release from it.
+- **Match the existing release title and note format:** name the GitHub Release `cbp-release-<X.Y.Z>` and use `RELEASE_NOTES/release-<X.Y.Z>.md` as its body without reformatting.
 - **Keep it readable by non-engineers** in Summary and Features; keep `Deploy notes & risk` honest for on-call.
 - Match the repo's existing tone; reuse the gotcha framing from the `build-and-deploy` skill rather than re-explaining it.
