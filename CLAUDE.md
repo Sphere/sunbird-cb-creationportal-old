@@ -177,7 +177,7 @@ Run the `release-notes` skill — it automates most of this. The full, ordered f
 3. **PR → merge** the prep branch into `main`.
 4. **Sync `development`** to `main` (and promote to `stage` when promoting).
 5. From the merged `main` commit, cut the **build branch `release-<X.Y.Z>`** and the **tag `v<X.Y.Z>`**.
-6. **Publish the GitHub Release** from the `v<X.Y.Z>` tag (body = the release note).
+6. **Publish the GitHub Release** from the `v<X.Y.Z>` tag (body = the release note). Match the established title `cbp-release-<X.Y.Z>` and use the release note unchanged from `RELEASE_NOTES/release-<X.Y.Z>.md`.
 7. **Deploy** by pointing the Jenkins job at the **build branch** `release-<X.Y.Z>`. Rollback = re-run against the previous release branch/tag.
 
 ---
